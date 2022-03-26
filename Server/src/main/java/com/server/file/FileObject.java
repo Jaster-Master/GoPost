@@ -1,4 +1,4 @@
-package com.Server.file;
+package com.server.file;
 
 public class FileObject {
     private Object object;

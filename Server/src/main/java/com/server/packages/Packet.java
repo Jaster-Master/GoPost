@@ -1,6 +1,6 @@
-package com.Server.packages;
+package com.server.packages;
 
-import com.Server.user.User;
+import com.server.user.User;
 
 import java.beans.XMLEncoder;
 import java.io.FileNotFoundException;

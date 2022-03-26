@@ -1,8 +1,8 @@
-package com.Server;
+package com.server;
 
-import com.Server.file.FileObject;
-import com.Server.file.FileHandler;
-import com.Server.user.Profile;
+import com.server.file.FileObject;
+import com.server.file.FileHandler;
+import com.server.user.Profile;
 
 import java.beans.XMLEncoder;
 import java.io.FileNotFoundException;

@@ -1,9 +1,8 @@
-package com.Server.connection;
+package com.server.connection;
 
-import com.Server.file.FileHandler;
-import com.Server.file.FileObject;
+import com.server.file.FileHandler;
+import com.server.file.FileObject;
 
-import java.beans.XMLEncoder;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;

@@ -1,6 +1,6 @@
-package com.Server.file;
+package com.server.file;
 
-import com.Server.encryption.Encrypt;
+import com.server.encryption.Encrypt;
 
 import java.beans.*;
 import java.io.FileInputStream;

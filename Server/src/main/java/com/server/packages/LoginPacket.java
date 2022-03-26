@@ -1,8 +1,8 @@
-package com.Server.packages;
+package com.server.packages;
 
-import com.Server.file.FileObject;
-import com.Server.file.FileHandler;
-import com.Server.user.User;
+import com.server.file.FileObject;
+import com.server.file.FileHandler;
+import com.server.user.User;
 
 public class LoginPacket extends Packet{
     private String userName;

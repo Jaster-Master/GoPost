@@ -1,4 +1,4 @@
-package com.Server.user;
+package com.server.user;
 
 public class Comment {
 }

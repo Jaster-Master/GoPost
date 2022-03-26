@@ -1,4 +1,4 @@
-package com.Server.encryption;
+package com.server.encryption;
 import java.security.MessageDigest;
 
 public class Encrypt

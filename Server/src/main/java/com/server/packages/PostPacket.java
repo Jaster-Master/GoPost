@@ -1,40 +1,45 @@
-package com.Server.packages;
+package com.server.packages;
 
-import com.Server.user.Mark;
-import com.Server.user.User;
+import com.server.user.Comment;
+import com.server.user.Mark;
+import com.server.user.User;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
 
-public class StoryPacket extends Packet{
-    private byte[][] story;
+public class PostPacket extends Packet{
+    private byte[][] pictures;
     private String url;
+    private String description;
     private User fromUser;
     private LocalDateTime releaseDate;
     private User[] likes;
+    private Comment[] comments;
     private Mark[] marks;
     private Locale location;
 
-    public StoryPacket() {
+    public PostPacket() {
     }
 
-    public StoryPacket(String command, User sentByUser, byte[][] story, String url, User fromUser, LocalDateTime releaseDate, User[] likes, Mark[] marks, Locale location) {
+    public PostPacket(String command, User sentByUser, byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, Mark[] marks, Locale location) {
         super(command, sentByUser);
-        this.story = story;
+        this.pictures = pictures;
         this.url = url;
+        this.description = description;
         this.fromUser = fromUser;
         this.releaseDate = releaseDate;
         this.likes = likes;
+        this.comments = comments;
         this.marks = marks;
         this.location = location;
     }
 
-    public byte[][] getStory() {
-        return story;
+    public byte[][] getPictures() {
+        return pictures;
     }
 
-    public void setStory(byte[][] story) {
-        this.story = story;
+    public void setPictures(byte[][] pictures) {
+        this.pictures = pictures;
     }
 
     public String getUrl() {
@@ -43,6 +48,14 @@ public class StoryPacket extends Packet{
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public User getFromUser() {
@@ -67,6 +80,14 @@ public class StoryPacket extends Packet{
 
     public void setLikes(User[] likes) {
         this.likes = likes;
+    }
+
+    public Comment[] getComments() {
+        return comments;
+    }
+
+    public void setComments(Comment[] comments) {
+        this.comments = comments;
     }
 
     public Mark[] getMarks() {

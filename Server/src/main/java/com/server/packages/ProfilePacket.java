@@ -1,8 +1,8 @@
-package com.Server.packages;
+package com.server.packages;
 
-import com.Server.user.Post;
-import com.Server.user.User;
-import com.Server.user.Story;
+import com.server.user.Post;
+import com.server.user.User;
+import com.server.user.Story;
 
 public class ProfilePacket extends Packet{
     private long userId;

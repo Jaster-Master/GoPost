@@ -1,6 +1,6 @@
-package com.Server.connection;
+package com.server.connection;
 
-import com.Server.packages.*;
+import com.server.packages.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

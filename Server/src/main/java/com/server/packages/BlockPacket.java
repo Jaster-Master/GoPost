@@ -1,6 +1,6 @@
-package com.Server.packages;
+package com.server.packages;
 
-import com.Server.user.User;
+import com.server.user.User;
 
 public class BlockPacket extends Packet{
     private User blockUser;
