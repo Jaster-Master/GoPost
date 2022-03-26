@@ -1,10 +1,7 @@
-package com.server.packages;
+package net.htlgkr.gopost.packet;
 
-import com.server.user.User;
+import net.htlgkr.gopost.client.User;
 
-import java.beans.XMLEncoder;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.Serializable;
 
 public class Packet implements Serializable {
@@ -18,19 +15,12 @@ public class Packet implements Serializable {
         this.command = command;
         this.sentByUser = sentByUser;
     }
-    public XMLEncoder getXMLEncoder(){
-        try {
-            return new XMLEncoder(new FileOutputStream("userLoginData.xml",true));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public String getCommand(){
+
+    public String getCommand() {
         return command;
     }
 
-    public User getSentByUser(){
+    public User getSentByUser() {
         return sentByUser;
     }
 

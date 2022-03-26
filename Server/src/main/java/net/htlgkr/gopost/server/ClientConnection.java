@@ -1,24 +1,26 @@
-package com.server.connection;
+package net.htlgkr.gopost.server;
 
-import com.server.packages.*;
+import net.htlgkr.gopost.packet.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ClientConnection implements Runnable{
-    private Socket clientSocket;
-    private ObjectOutputStream writer;
-    private ObjectInputStream reader;
-    private long id;
+public class ClientConnection implements Runnable {
 
-    public long getId() {
-        return id;
+    private final Server server;
+    private final Socket clientSocket;
+    private final ObjectOutputStream writer;
+    private final ObjectInputStream reader;
+    private long userId;
+
+    public long getUserId() {
+        return userId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public ObjectOutputStream getWriter() {
@@ -29,7 +31,8 @@ public class ClientConnection implements Runnable{
         return reader;
     }
 
-    public ClientConnection(Socket clientSocket, ObjectOutputStream writer, ObjectInputStream reader) {
+    public ClientConnection(Server server, Socket clientSocket, ObjectOutputStream writer, ObjectInputStream reader) {
+        this.server = server;
         this.clientSocket = clientSocket;
         this.writer = writer;
         this.reader = reader;
@@ -37,34 +40,32 @@ public class ClientConnection implements Runnable{
 
     @Override
     public void run() {
-        boolean running = true;
-        while (running) {
-            try {
-                Packet packet = (Packet) reader.readObject();
-                if(packet instanceof BlockPacket blockPacket){
+        try {
+            while (true) {
+                Object packet = reader.readObject();
+                if (!(packet instanceof Packet)) continue;
+                if (packet instanceof BlockPacket blockPacket) {
                     handleBlockPacket(blockPacket);
-                }else if(packet instanceof LoginPacket loginPacket){
+                } else if (packet instanceof LoginPacket loginPacket) {
                     handleLoginPacket(loginPacket);
-                }else if(packet instanceof PostPacket postPacket){
+                } else if (packet instanceof PostPacket postPacket) {
                     handlePostPacket(postPacket);
-                }else if(packet instanceof ProfilePacket profilePacket){
+                } else if (packet instanceof ProfilePacket profilePacket) {
                     handleProfilePacket(profilePacket);
-                }else if(packet instanceof ReportPacket reportPacket){
+                } else if (packet instanceof ReportPacket reportPacket) {
                     handleReportPacket(reportPacket);
-                }else if(packet instanceof StoryPacket storyPacket){
+                } else if (packet instanceof StoryPacket storyPacket) {
                     handleStoryPacket(storyPacket);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
     private void handleStoryPacket(StoryPacket storyPacket) {
         String command = storyPacket.getCommand();
-        switch (command){
+        switch (command) {
             case "":
                 break;
         }
@@ -72,7 +73,7 @@ public class ClientConnection implements Runnable{
 
     private void handleReportPacket(ReportPacket reportPacket) {
         String command = reportPacket.getCommand();
-        switch (command){
+        switch (command) {
             case "":
                 break;
         }
@@ -80,7 +81,7 @@ public class ClientConnection implements Runnable{
 
     private void handleProfilePacket(ProfilePacket profilePacket) {
         String command = profilePacket.getCommand();
-        switch (command){
+        switch (command) {
             case "":
                 break;
         }
@@ -88,7 +89,7 @@ public class ClientConnection implements Runnable{
 
     private void handlePostPacket(PostPacket postPacket) {
         String command = postPacket.getCommand();
-        switch (command){
+        switch (command) {
             case "":
                 break;
         }
@@ -96,13 +97,13 @@ public class ClientConnection implements Runnable{
 
     private void handleLoginPacket(LoginPacket loginPacket) {
         String command = loginPacket.getCommand();
-        switch (command){
+        switch (command) {
             case "firstTimeLogin":
-                loginPacket.writeUserIntoFile(loginPacket.getPassword());
+                server.writeUserIntoFile(loginPacket);
                 break;
             case "checkIfCorrectPassword":
                 try {
-                    writer.writeObject(loginPacket.readUserFromFile(loginPacket.getPassword()));
+                    writer.writeObject(server.readUserFromFile(loginPacket));
                     writer.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -113,7 +114,7 @@ public class ClientConnection implements Runnable{
 
     private void handleBlockPacket(BlockPacket blockPacket) {
         String command = blockPacket.getCommand();
-        switch (command){
+        switch (command) {
             case "":
                 break;
         }

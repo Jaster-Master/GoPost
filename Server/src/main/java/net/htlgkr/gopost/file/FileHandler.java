@@ -1,36 +1,38 @@
-package com.server.file;
+package net.htlgkr.gopost.file;
 
-import com.server.encryption.Encrypt;
+import net.htlgkr.gopost.util.Encrypt;
 
-import java.beans.*;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.FileInputStream;
 
 public class FileHandler {
-    FileObject[] entries;
+    private FileObject[] entries;
     private XMLEncoder xmlEncoder;
     private String filename;
-    public FileHandler(String filename) {
-    }
 
     public FileHandler() {
     }
 
+    public FileHandler(String filename) {
+        this.filename = filename;
+    }
+
     public FileHandler(String filename, XMLEncoder xmlEncoder, FileObject... entries) {
         this.entries = entries;
-        this.xmlEncoder=xmlEncoder;
-        this.filename=filename;
+        this.xmlEncoder = xmlEncoder;
+        this.filename = filename;
     }
 
     public void writeIntoFile() {
-        for (int i = 0; i < entries.length; i++) {
-            if (entries[i].getObject() == null) continue;
-            if (entries[i].isEncrypted() && entries[i].getObject() instanceof String string) {
+        for (FileObject entry : entries) {
+            if (entry.getObject() == null) continue;
+            if (entry.isEncrypted() && entry.getObject() instanceof String string) {
                 xmlEncoder.writeObject(Encrypt.SHA512(string));
-                xmlEncoder.flush();
             } else {
-                xmlEncoder.writeObject(entries[i].getObject());
-                xmlEncoder.flush();
+                xmlEncoder.writeObject(entry.getObject());
             }
+            xmlEncoder.flush();
         }
 //        try {
 //            XMLEncoder writer = new XMLEncoder(new FileOutputStream("fileName"));
@@ -53,17 +55,17 @@ public class FileHandler {
 //        }
     }
 
-    public Object readFromFile(FileObject read) {
+    public Object readFromFile(FileObject readObject) {
         try (XMLDecoder xmlDecoder = new XMLDecoder(new FileInputStream(filename))) {
-            Object line;
-            while ((line = xmlDecoder.readObject()) != null) {
-                if (read.isEncrypted()) {
-                    if (Encrypt.SHA512(String.valueOf(read.getObject())).equals(line)) {
-                        return line;
+            Object object;
+            while ((object = xmlDecoder.readObject()) != null) {
+                if (readObject.isEncrypted()) {
+                    if (Encrypt.SHA512(String.valueOf(readObject.getObject())).equals(object)) {
+                        return object;
                     }
                 } else {
-                    if (line.equals(read.getObject())) {
-                        return line;
+                    if (object.equals(readObject.getObject())) {
+                        return object;
                     }
                 }
             }
@@ -74,9 +76,10 @@ public class FileHandler {
     }
 
     public void removeFromFile(FileObject remove) {
-        if (remove.isEncrypted())
+        if (remove.isEncrypted()) {
             xmlEncoder.remove(Encrypt.SHA512((String) remove.getObject()));
-        else
+        } else {
             xmlEncoder.remove(remove.getObject());
+        }
     }
 }

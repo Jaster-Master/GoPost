@@ -1,12 +1,12 @@
-package com.server.packages;
+package net.htlgkr.gopost.packet;
 
-import com.server.user.Mark;
-import com.server.user.User;
+import net.htlgkr.gopost.client.Mark;
+import net.htlgkr.gopost.client.User;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
 
-public class StoryPacket extends Packet{
+public class StoryPacket extends Packet {
     private byte[][] story;
     private String url;
     private User fromUser;

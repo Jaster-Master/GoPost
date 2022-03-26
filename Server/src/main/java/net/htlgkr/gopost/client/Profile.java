@@ -1,4 +1,4 @@
-package com.server.user;
+package net.htlgkr.gopost.client;
 
 public class Profile {
     private String userName;
@@ -11,6 +11,6 @@ public class Profile {
     public Profile(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
-        this.password=password;
+        this.password = password;
     }
 }

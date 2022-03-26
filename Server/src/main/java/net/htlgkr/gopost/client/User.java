@@ -1,4 +1,4 @@
-package com.server.user;
+package net.htlgkr.gopost.client;
 
 public class User {
     private String userName;

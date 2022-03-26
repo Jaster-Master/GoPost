@@ -1,8 +1,8 @@
-package com.server.packages;
+package net.htlgkr.gopost.packet;
 
-import com.server.user.User;
+import net.htlgkr.gopost.client.User;
 
-public class ReportPacket extends Packet{
+public class ReportPacket extends Packet {
     private User reportUser;
     private String reason;
 

@@ -1,8 +1,8 @@
-package com.server.packages;
+package net.htlgkr.gopost.packet;
 
-import com.server.user.User;
+import net.htlgkr.gopost.client.User;
 
-public class BlockPacket extends Packet{
+public class BlockPacket extends Packet {
     private User blockUser;
 
     public BlockPacket(String command, User sentByUser, User blockUser) {

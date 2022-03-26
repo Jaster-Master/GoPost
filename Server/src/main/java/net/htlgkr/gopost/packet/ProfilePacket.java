@@ -1,10 +1,10 @@
-package com.server.packages;
+package net.htlgkr.gopost.packet;
 
-import com.server.user.Post;
-import com.server.user.User;
-import com.server.user.Story;
+import net.htlgkr.gopost.client.Post;
+import net.htlgkr.gopost.client.Story;
+import net.htlgkr.gopost.client.User;
 
-public class ProfilePacket extends Packet{
+public class ProfilePacket extends Packet {
     private long userId;
     private byte[] profilePicture;
     private String profileName;

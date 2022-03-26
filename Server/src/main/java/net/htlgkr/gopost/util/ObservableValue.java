@@ -1,4 +1,4 @@
-package com.server;
+package net.htlgkr.gopost.util;
 
 import java.io.Serializable;
 
@@ -49,24 +49,29 @@ public class ObservableValue<T> implements Serializable {
         setValue(observableValue);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return observableValue == null;
     }
 
-    public boolean hasChangeListener(){
+    public boolean hasChangeListener() {
         return onValueChange != null;
     }
 
-    public boolean hasSetListener(){
+    public boolean hasSetListener() {
         return onValueSet != null;
     }
 
-    public synchronized void setValue(T observableValue){
-        if(hasChangeListener() && this.observableValue != observableValue){
+    public synchronized void setValue(T observableValue) {
+        if (hasChangeListener() && this.observableValue != observableValue) {
             onValueChange.onValueChange(this.observableValue, observableValue);
         }
-        if(hasSetListener()){
+        if (hasSetListener()) {
             onValueSet.onValueSet(observableValue);
+        }
+        if(boundValue != null && !boundCall){
+            boundValue.boundCall = true;
+            boundValue.setValue(observableValue);
+            boundValue.boundCall = false;
         }
         this.observableValue = observableValue;
     }
@@ -75,7 +80,7 @@ public class ObservableValue<T> implements Serializable {
         return observableValue;
     }
 
-    public synchronized void setOnValueChange(ChangeListener<T> onValueChange){
+    public synchronized void setOnValueChange(ChangeListener<T> onValueChange) {
         this.onValueChange = onValueChange;
     }
 
@@ -83,7 +88,7 @@ public class ObservableValue<T> implements Serializable {
         return onValueChange;
     }
 
-    public synchronized void setOnValueSet(SetListener<T> onValueSet){
+    public synchronized void setOnValueSet(SetListener<T> onValueSet) {
         this.onValueSet = onValueSet;
     }
 
@@ -91,11 +96,37 @@ public class ObservableValue<T> implements Serializable {
         return onValueSet;
     }
 
-    public interface ChangeListener<T> extends Serializable{
+    public interface ChangeListener<T> extends Serializable {
         void onValueChange(T oldValue, T newValue);
     }
 
-    public interface SetListener<T> extends Serializable{
+    public interface SetListener<T> extends Serializable {
         void onValueSet(T value);
+    }
+
+    private ObservableValue<T> boundValue;
+    private ObservableValue<T> boundedValue;
+    private boolean boundCall;
+
+    public void bind(ObservableValue<T> boundValue) {
+        boundCall = true;
+        boundValue.boundValue = this;
+        this.boundedValue = boundValue;
+    }
+
+    public void bindBidirectional(ObservableValue<T> boundValue) {
+        boundCall = true;
+        boundValue.boundValue = this;
+        boundValue.boundedValue = this;
+        this.boundValue = boundValue;
+        this.boundedValue = boundValue;
+    }
+
+    public void unbind(){
+        if(boundedValue == null) return;
+        boundValue = null;
+        boundedValue.boundValue = null;
+        boundedValue.boundedValue = null;
+        boundedValue = null;
     }
 }

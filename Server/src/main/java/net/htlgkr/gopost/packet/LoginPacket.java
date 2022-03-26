@@ -1,10 +1,8 @@
-package com.server.packages;
+package net.htlgkr.gopost.packet;
 
-import com.server.file.FileObject;
-import com.server.file.FileHandler;
-import com.server.user.User;
+import net.htlgkr.gopost.client.User;
 
-public class LoginPacket extends Packet{
+public class LoginPacket extends Packet {
     private String userName;
     private String email;
     private String password;
@@ -16,7 +14,7 @@ public class LoginPacket extends Packet{
         super(command, sentByUser);
         this.userName = userName;
         this.email = email;
-        this.password=password;
+        this.password = password;
     }
 
     public String getUserName() {
@@ -41,17 +39,5 @@ public class LoginPacket extends Packet{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void writeUserIntoFile(String password) {
-        FileHandler writerRead = new FileHandler("userLoginData.xml",getXMLEncoder(),new FileObject(password,true),
-                new FileObject(userName,false),
-                new FileObject(email,false));
-        writerRead.writeIntoFile();
-    }
-
-    public Object readUserFromFile(String password) {
-        FileHandler writerRead = new FileHandler();
-        return writerRead.readFromFile(new FileObject(password,true));
     }
 }
