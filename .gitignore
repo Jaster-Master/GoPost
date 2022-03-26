@@ -69,3 +69,6 @@ Server/google-services.json
 
 # Android Profiling
 Server/*.hprof
+
+Server/target/
+Server/*.xml
