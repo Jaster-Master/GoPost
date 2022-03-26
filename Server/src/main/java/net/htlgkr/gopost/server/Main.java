@@ -1,6 +1,6 @@
 package net.htlgkr.gopost.server;
 
-import net.htlgkr.gopost.client.Profile;
+import net.htlgkr.gopost.data.Profile;
 import net.htlgkr.gopost.file.FileHandler;
 import net.htlgkr.gopost.file.FileObject;
 

@@ -1,7 +1,7 @@
 package net.htlgkr.gopost.packet;
 
-import net.htlgkr.gopost.client.Mark;
-import net.htlgkr.gopost.client.User;
+import net.htlgkr.gopost.data.Mark;
+import net.htlgkr.gopost.data.User;
 
 import java.time.LocalDateTime;
 import java.util.Locale;

@@ -2,6 +2,8 @@ package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.User;
 
+import java.util.Objects;
+
 public class LoginPacket extends Packet {
     private String userName;
     private String email;
@@ -39,5 +41,18 @@ public class LoginPacket extends Packet {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LoginPacket that = (LoginPacket) o;
+        return Objects.equals(userName, that.userName) && Objects.equals(email, that.email) && Objects.equals(password, that.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName, email, password);
     }
 }

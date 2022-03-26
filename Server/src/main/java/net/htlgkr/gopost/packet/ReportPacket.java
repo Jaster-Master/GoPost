@@ -1,18 +1,18 @@
 package net.htlgkr.gopost.packet;
 
-import net.htlgkr.gopost.client.User;
+import net.htlgkr.gopost.data.User;
 
 public class ReportPacket extends Packet {
     private User reportUser;
     private String reason;
 
+    public ReportPacket() {
+    }
+
     public ReportPacket(String command, User sentByUser, User reportUser, String reason) {
         super(command, sentByUser);
         this.reportUser = reportUser;
         this.reason = reason;
-    }
-
-    public ReportPacket() {
     }
 
     public User getReportUser() {
