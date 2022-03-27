@@ -1,33 +1,29 @@
 package net.htlgkr.gopost.server;
 
-import net.htlgkr.gopost.client.Profile;
-import net.htlgkr.gopost.file.FileHandler;
-import net.htlgkr.gopost.file.FileObject;
+import net.htlgkr.gopost.database.DBHandler;
+import net.htlgkr.gopost.util.Encrypt;
 
-import java.beans.XMLEncoder;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class Main {
-
-    private static FileHandler fileHandler;
-    private static final String FILE_NAME = "userLoginData.xml";
-
     public static void main(String[] args) {
-        createFileHandler();
-        fileHandler.writeIntoFile();
-//        writerRead.removeFromFile(new FileObject("Zecher",false));
-        //new Server().startServer(args);
-    }
-
-    private static void createFileHandler() {
-        try {
-            XMLEncoder encoder = new XMLEncoder(new FileOutputStream(FILE_NAME, true));
-            Profile profile = new Profile("Max", "Kammerer", "adsfasdf");
-            FileObject fileObject = new FileObject(profile, false);
-            fileHandler = new FileHandler(FILE_NAME, encoder, fileObject);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        DBHandler dbHandler = new DBHandler();
+        String name = "David";
+        String profName = "dk";
+        String email = "Kogler@nom.at";
+        String password = Encrypt.SHA512("nomnom");
+        boolean isPrivate = false;
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Timestamp timestamp = Timestamp.valueOf(localDateTime);
+        dbHandler.executeStatementsOnDB("INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)",name,profName,email,password,isPrivate,timestamp);
+        List<Object> list =dbHandler.readFromDB("Select * FROM GoUser","1;BigInt","2;String","3;String");
+        for (Object o : list) {
+            System.out.println(o.toString());
         }
+        //new Server().startServer(args);
     }
 }

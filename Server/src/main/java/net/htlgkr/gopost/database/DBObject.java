@@ -1,16 +1,16 @@
-package net.htlgkr.gopost.file;
+package net.htlgkr.gopost.database;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class FileObject implements Serializable {
+public class DBObject implements Serializable {
     private Object object;
     private boolean isEncrypted;
 
-    public FileObject() {
+    public DBObject() {
     }
 
-    public FileObject(Object object, boolean isEncrypted) {
+    public DBObject(Object object, boolean isEncrypted) {
         this.object = object;
         this.isEncrypted = isEncrypted;
     }
@@ -35,7 +35,7 @@ public class FileObject implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FileObject that = (FileObject) o;
+        DBObject that = (DBObject) o;
         return isEncrypted == that.isEncrypted && Objects.equals(object, that.object);
     }
 

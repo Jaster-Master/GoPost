@@ -1,11 +1,16 @@
 package net.htlgkr.gopost.server;
 
+import net.htlgkr.gopost.database.DBHandler;
 import net.htlgkr.gopost.packet.*;
+import net.htlgkr.gopost.util.Encrypt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class ClientConnection implements Runnable {
 
@@ -97,17 +102,14 @@ public class ClientConnection implements Runnable {
 
     private void handleLoginPacket(LoginPacket loginPacket) {
         String command = loginPacket.getCommand();
+        DBHandler dbHandler = new DBHandler();
         switch (command) {
             case "firstTimeLogin":
-                server.writeUserIntoFile(loginPacket);
+                dbHandler.executeStatementsOnDB("INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)",
+                        loginPacket.getUserName(),loginPacket.getProfileName(),loginPacket.getEmail(), Encrypt.SHA512(loginPacket.getPassword()),loginPacket.isPrivate(), Timestamp.valueOf(LocalDateTime.now()));
                 break;
             case "checkIfCorrectPassword":
-                try {
-                    writer.writeObject(server.readUserFromFile(loginPacket));
-                    writer.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                //writer.writeObject();
                 break;
         }
     }
