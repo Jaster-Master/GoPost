@@ -1,10 +1,11 @@
-package net.htlgkr.gopost.packet;
+package net.htlgkr.gopost.data;
 
-import net.htlgkr.gopost.data.Post;
-import net.htlgkr.gopost.data.Story;
-import net.htlgkr.gopost.data.User;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Objects;
 
-public class ProfilePacket extends Packet {
+public class Profile implements Serializable {
     private long userId;
     private byte[] profilePicture;
     private String profileName;
@@ -17,12 +18,12 @@ public class ProfilePacket extends Packet {
     private User[] friends;
     private User[] followers;
     private User[] followed;
+    private LocalDateTime createdDate;
 
-    public ProfilePacket() {
+    public Profile() {
     }
 
-    public ProfilePacket(String command, User sentByUser, long userId, byte[] profilePicture, String profileName, String userName, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed) {
-        super(command, sentByUser);
+    public Profile(long userId, byte[] profilePicture, String profileName, String userName, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed, LocalDateTime createdDate) {
         this.userId = userId;
         this.profilePicture = profilePicture;
         this.profileName = profileName;
@@ -35,6 +36,7 @@ public class ProfilePacket extends Packet {
         this.friends = friends;
         this.followers = followers;
         this.followed = followed;
+        this.createdDate = createdDate;
     }
 
     public long getUserId() {
@@ -131,5 +133,34 @@ public class ProfilePacket extends Packet {
 
     public void setFollowed(User[] followed) {
         this.followed = followed;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Profile profile = (Profile) o;
+        return userId == profile.userId && isPrivate == profile.isPrivate && Arrays.equals(profilePicture, profile.profilePicture) && Objects.equals(profileName, profile.profileName) && Objects.equals(userName, profile.userName) && Objects.equals(description, profile.description) && Arrays.equals(posts, profile.posts) && Arrays.equals(stories, profile.stories) && Arrays.equals(savedPosts, profile.savedPosts) && Arrays.equals(friends, profile.friends) && Arrays.equals(followers, profile.followers) && Arrays.equals(followed, profile.followed) && Objects.equals(createdDate, profile.createdDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(userId, profileName, userName, description, isPrivate, createdDate);
+        result = 31 * result + Arrays.hashCode(profilePicture);
+        result = 31 * result + Arrays.hashCode(posts);
+        result = 31 * result + Arrays.hashCode(stories);
+        result = 31 * result + Arrays.hashCode(savedPosts);
+        result = 31 * result + Arrays.hashCode(friends);
+        result = 31 * result + Arrays.hashCode(followers);
+        result = 31 * result + Arrays.hashCode(followed);
+        return result;
     }
 }

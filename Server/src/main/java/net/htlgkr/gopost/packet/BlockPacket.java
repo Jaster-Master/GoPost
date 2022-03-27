@@ -1,9 +1,12 @@
 package net.htlgkr.gopost.packet;
 
-import net.htlgkr.gopost.client.User;
+import net.htlgkr.gopost.data.User;
 
 public class BlockPacket extends Packet {
     private User blockUser;
+
+    public BlockPacket() {
+    }
 
     public BlockPacket(String command, User sentByUser, User blockUser) {
         super(command, sentByUser);
@@ -12,9 +15,6 @@ public class BlockPacket extends Packet {
 
     public User getBlockUser() {
         return blockUser;
-    }
-
-    public BlockPacket() {
     }
 
     public void setBlockUser(User blockUser) {
