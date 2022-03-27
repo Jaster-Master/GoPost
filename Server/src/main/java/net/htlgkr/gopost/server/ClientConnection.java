@@ -109,7 +109,7 @@ public class ClientConnection implements Runnable {
                         loginPacket.getUserName(),loginPacket.getProfileName(),loginPacket.getEmail(), Encrypt.SHA512(loginPacket.getPassword()),loginPacket.isPrivate(), Timestamp.valueOf(LocalDateTime.now()));
                 break;
             case "checkIfCorrectPassword":
-                //writer.writeObject();
+                //dbHandler.readFromDB()
                 break;
         }
     }

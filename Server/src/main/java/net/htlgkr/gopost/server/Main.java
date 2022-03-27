@@ -13,6 +13,7 @@ public class Main {
     public static void main(String[] args) {
         DBHandler dbHandler = new DBHandler();
         String name = "David";
+        name.split(";");
         String profName = "dk";
         String email = "Kogler@nom.at";
         String password = Encrypt.SHA512("nomnom");
@@ -20,7 +21,7 @@ public class Main {
         LocalDateTime localDateTime = LocalDateTime.now();
         Timestamp timestamp = Timestamp.valueOf(localDateTime);
         dbHandler.executeStatementsOnDB("INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)",name,profName,email,password,isPrivate,timestamp);
-        List<Object> list =dbHandler.readFromDB("Select * FROM GoUser","1;BigInt","2;String","3;String");
+        List<Object> list =dbHandler.readFromDB("Select * FROM GoUser WHERE GoUserId=?","1","1;BigInt","2;String","3;String");
         for (Object o : list) {
             System.out.println(o.toString());
         }

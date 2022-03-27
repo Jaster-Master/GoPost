@@ -1,7 +1,6 @@
 package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.Comment;
-import net.htlgkr.gopost.data.Mark;
 import net.htlgkr.gopost.data.User;
 
 import java.time.LocalDateTime;
@@ -15,13 +14,12 @@ public class PostPacket extends Packet {
     private LocalDateTime releaseDate;
     private User[] likes;
     private Comment[] comments;
-    private Mark[] marks;
     private Locale location;
 
     public PostPacket() {
     }
 
-    public PostPacket(String command, User sentByUser, byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, Mark[] marks, Locale location) {
+    public PostPacket(String command, User sentByUser, byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, Locale location) {
         super(command, sentByUser);
         this.pictures = pictures;
         this.url = url;
@@ -30,7 +28,6 @@ public class PostPacket extends Packet {
         this.releaseDate = releaseDate;
         this.likes = likes;
         this.comments = comments;
-        this.marks = marks;
         this.location = location;
     }
 
@@ -88,14 +85,6 @@ public class PostPacket extends Packet {
 
     public void setComments(Comment[] comments) {
         this.comments = comments;
-    }
-
-    public Mark[] getMarks() {
-        return marks;
-    }
-
-    public void setMarks(Mark[] marks) {
-        this.marks = marks;
     }
 
     public Locale getLocation() {

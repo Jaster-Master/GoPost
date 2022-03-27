@@ -44,38 +44,42 @@ public class DBHandler {
         }
     }
 
-    public List<Object> readFromDB(String statement, String ... objects) {
+    public List<Object> readFromDB(String statement, Object ... objects) {
         List<Object> results = new ArrayList<>();
+        List<Object> statementValues = valuesOfStatement(objects);
         try {
             PreparedStatement prepareStatement = dbConnection.prepareStatement(statement);
-            for (int i = 0; i < objects.length; i++) {
-                //prepareStatement.setObject(i+1,objects[i]);
+            for (int i = 0; i < statementValues.size(); i++) {
+                prepareStatement.setObject(i+1,statementValues.get(i));
             }
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next())
             {
-                for (String object : objects) {
+                for (Object object2 : objects) {
+                    String object = (String) object2;
                     String[] split = object.split(";");
-                    int column = Integer.parseInt(split[0]);
-                    switch (split[1]){
-                        case "BigInt":
-                            results.add(resultSet.getInt(column));
-                            break;
-                        case "String":
-                            results.add(resultSet.getString(column));
-                            break;
-                        case "Boolean":
-                            results.add(resultSet.getBoolean(column));
-                            break;
-                        case "Timestamp":
-                            results.add(resultSet.getTimestamp(column));
-                            break;
-                        case "Blob":
-                            results.add(resultSet.getBlob(column));
-                            break;
-                        case "Double":
-                            results.add(resultSet.getDouble(column));
-                            break;
+                    if(split.length==2) {
+                        int column = Integer.parseInt(split[0]);
+                        switch (split[1]) {
+                            case "BigInt":
+                                results.add(resultSet.getInt(column));
+                                break;
+                            case "String":
+                                results.add(resultSet.getString(column));
+                                break;
+                            case "Boolean":
+                                results.add(resultSet.getBoolean(column));
+                                break;
+                            case "Timestamp":
+                                results.add(resultSet.getTimestamp(column));
+                                break;
+                            case "Blob":
+                                results.add(resultSet.getBlob(column));
+                                break;
+                            case "Double":
+                                results.add(resultSet.getDouble(column));
+                                break;
+                        }
                     }
                 }
             }
@@ -85,6 +89,22 @@ public class DBHandler {
             e.printStackTrace();
         }
         return results;
+    }
+
+    private List<Object> valuesOfStatement(Object[] objects) {
+        List<Object> statementValues = new ArrayList<>();
+        for (Object object2 : objects) {
+            try{
+                String object = (String) object2;
+                String[] split = object.split(";");
+                if(split.length!=2){
+                    statementValues.add(object2);
+                }
+            }catch (ClassCastException e){
+                statementValues.add(object2);
+            }
+        }
+        return statementValues;
     }
 
 }

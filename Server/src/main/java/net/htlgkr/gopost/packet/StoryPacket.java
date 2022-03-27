@@ -1,6 +1,5 @@
 package net.htlgkr.gopost.packet;
 
-import net.htlgkr.gopost.data.Mark;
 import net.htlgkr.gopost.data.User;
 
 import java.time.LocalDateTime;
@@ -12,20 +11,18 @@ public class StoryPacket extends Packet {
     private User fromUser;
     private LocalDateTime releaseDate;
     private User[] likes;
-    private Mark[] marks;
     private Locale location;
 
     public StoryPacket() {
     }
 
-    public StoryPacket(String command, User sentByUser, byte[][] story, String url, User fromUser, LocalDateTime releaseDate, User[] likes, Mark[] marks, Locale location) {
+    public StoryPacket(String command, User sentByUser, byte[][] story, String url, User fromUser, LocalDateTime releaseDate, User[] likes, Locale location) {
         super(command, sentByUser);
         this.story = story;
         this.url = url;
         this.fromUser = fromUser;
         this.releaseDate = releaseDate;
         this.likes = likes;
-        this.marks = marks;
         this.location = location;
     }
 
@@ -67,14 +64,6 @@ public class StoryPacket extends Packet {
 
     public void setLikes(User[] likes) {
         this.likes = likes;
-    }
-
-    public Mark[] getMarks() {
-        return marks;
-    }
-
-    public void setMarks(Mark[] marks) {
-        this.marks = marks;
     }
 
     public Locale getLocation() {
