@@ -9,12 +9,12 @@ import java.net.Socket;
 
 public class Client {
 
-    private static Profile client;
-    private static ObservableValue<Boolean> isConnected;
-    private static Socket clientSocket;
     private static final int PORT = 10443;
     private static final String IP_ADDRESS = "80.243.162.116";
+    private static final ObservableValue<Boolean> isConnected = new ObservableValue<>();
+    private static Socket clientSocket;
     private static ServerConnection connection;
+    private static Profile client;
 
     public static boolean openConnection() {
         clientSocket = new Socket();

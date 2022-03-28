@@ -2,8 +2,8 @@ package net.htlgkr.gopost.activity;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
 public class BaseActivity extends AppCompatActivity {
     public static BaseActivity instance;
@@ -12,22 +12,18 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
-        enableSystemTheme();
+        setTheme(savedInstanceState);
     }
 
-    public void enableSystemTheme() {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+    private void setTheme(Bundle savedInstanceState) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean("IsDarkMode")) {
+            setTheme(android.R.style.Theme_Black_NoTitleBar);
+        }
     }
 
-    public void enableDarkTheme() {
-        /*UiModeManager uiModeManager = (UiModeManager) LoginActivity.INSTANCE.getSystemService(Context.UI_MODE_SERVICE);
-        uiModeManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);*/
-    }
-
-    public void disableDarkTheme() {
-        /*UiModeManager uiModeManager = (UiModeManager) LoginActivity.INSTANCE.getSystemService(Context.UI_MODE_SERVICE);
-        uiModeManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);*/
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("IsDarkMode", true);
     }
 }
