@@ -48,7 +48,7 @@ public class DBHandler {
         try {
             PreparedStatement prepareStatement = dbConnection.prepareStatement(statement);
             for (int i = 0; i < statementValues.size(); i++) {
-                prepareStatement.setObject(i + 1, statementValues.get(i));
+                prepareStatement.setObject(i + 1, statementValues.get(i).getObject());
             }
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next()) {
