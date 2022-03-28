@@ -1,97 +1,40 @@
 package net.htlgkr.gopost.packet;
 
-import net.htlgkr.gopost.data.Comment;
+import net.htlgkr.gopost.data.Post;
 import net.htlgkr.gopost.data.User;
 
-import java.time.LocalDateTime;
-import java.util.Locale;
+import java.util.Objects;
 
 public class PostPacket extends Packet {
-    private byte[][] pictures;
-    private String url;
-    private String description;
-    private User fromUser;
-    private LocalDateTime releaseDate;
-    private User[] likes;
-    private Comment[] comments;
-    private Locale location;
+
+    private Post post;
 
     public PostPacket() {
     }
 
-    public PostPacket(String command, User sentByUser, byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, Locale location) {
+    public PostPacket(String command, User sentByUser, Post post) {
         super(command, sentByUser);
-        this.pictures = pictures;
-        this.url = url;
-        this.description = description;
-        this.fromUser = fromUser;
-        this.releaseDate = releaseDate;
-        this.likes = likes;
-        this.comments = comments;
-        this.location = location;
+        this.post = post;
     }
 
-    public byte[][] getPictures() {
-        return pictures;
+    public Post getPost() {
+        return post;
     }
 
-    public void setPictures(byte[][] pictures) {
-        this.pictures = pictures;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
-    public String getUrl() {
-        return url;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostPacket that = (PostPacket) o;
+        return Objects.equals(post, that.post);
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public User getFromUser() {
-        return fromUser;
-    }
-
-    public void setFromUser(User fromUser) {
-        this.fromUser = fromUser;
-    }
-
-    public LocalDateTime getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public User[] getLikes() {
-        return likes;
-    }
-
-    public void setLikes(User[] likes) {
-        this.likes = likes;
-    }
-
-    public Comment[] getComments() {
-        return comments;
-    }
-
-    public void setComments(Comment[] comments) {
-        this.comments = comments;
-    }
-
-    public Locale getLocation() {
-        return location;
-    }
-
-    public void setLocation(Locale location) {
-        this.location = location;
+    @Override
+    public int hashCode() {
+        return Objects.hash(post);
     }
 }

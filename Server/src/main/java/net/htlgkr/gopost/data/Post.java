@@ -3,7 +3,6 @@ package net.htlgkr.gopost.data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Objects;
 
 public class Post implements Serializable {
@@ -12,27 +11,25 @@ public class Post implements Serializable {
     private String url;
     private String description;
     private User fromUser;
-    private LocalDateTime releaseDate;
+    private LocalDateTime createdDate;
     private User[] likes;
     private Comment[] comments;
     private User[] marks;
-    private Locale location;
-    private LocalDateTime createdDate;
+    private GoLocation location;
 
     public Post() {
     }
 
-    public Post(byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, User[] marks, Locale location, LocalDateTime createdDate) {
+    public Post(byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, User[] marks, GoLocation location) {
         this.pictures = pictures;
         this.url = url;
         this.description = description;
         this.fromUser = fromUser;
-        this.releaseDate = releaseDate;
+        this.createdDate = releaseDate;
         this.likes = likes;
         this.comments = comments;
         this.marks = marks;
         this.location = location;
-        this.createdDate = createdDate;
     }
 
     public byte[][] getPictures() {
@@ -67,12 +64,12 @@ public class Post implements Serializable {
         this.fromUser = fromUser;
     }
 
-    public LocalDateTime getReleaseDate() {
-        return releaseDate;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
-    public void setReleaseDate(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 
     public User[] getLikes() {
@@ -99,20 +96,12 @@ public class Post implements Serializable {
         this.marks = marks;
     }
 
-    public Locale getLocation() {
+    public GoLocation getLocation() {
         return location;
     }
 
-    public void setLocation(Locale location) {
+    public void setLocation(GoLocation location) {
         this.location = location;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
     }
 
     @Override
@@ -120,12 +109,12 @@ public class Post implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return Arrays.equals(pictures, post.pictures) && Objects.equals(url, post.url) && Objects.equals(description, post.description) && Objects.equals(fromUser, post.fromUser) && Objects.equals(releaseDate, post.releaseDate) && Arrays.equals(likes, post.likes) && Arrays.equals(comments, post.comments) && Arrays.equals(marks, post.marks) && Objects.equals(location, post.location) && Objects.equals(createdDate, post.createdDate);
+        return Arrays.equals(pictures, post.pictures) && Objects.equals(url, post.url) && Objects.equals(description, post.description) && Objects.equals(fromUser, post.fromUser) && Objects.equals(createdDate, post.createdDate) && Arrays.equals(likes, post.likes) && Arrays.equals(comments, post.comments) && Arrays.equals(marks, post.marks) && Objects.equals(location, post.location);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(url, description, fromUser, releaseDate, location, createdDate);
+        int result = Objects.hash(url, description, fromUser, createdDate, location);
         result = 31 * result + Arrays.hashCode(pictures);
         result = 31 * result + Arrays.hashCode(likes);
         result = 31 * result + Arrays.hashCode(comments);

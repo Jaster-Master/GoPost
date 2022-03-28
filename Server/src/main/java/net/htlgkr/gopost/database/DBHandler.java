@@ -1,17 +1,13 @@
 package net.htlgkr.gopost.database;
 
-import com.mysql.cj.jdbc.Blob;
-import com.mysql.cj.result.Field;
-import net.htlgkr.gopost.util.Encrypt;
+import net.htlgkr.gopost.data.User;
 
-import java.beans.XMLEncoder;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBHandler {
-    private static final String DATABASE_URL ="jdbc:mysql://10.109.0.1:16660/GoPostTest";
+    private static final String DATABASE_URL = "jdbc:mysql://10.109.0.1:16660/GoPostTest";
 
     private Connection dbConnection;
 
@@ -20,23 +16,23 @@ public class DBHandler {
     }
 
     private boolean startDBConnection() {
-        if(System.getenv("DB_PASS")==null)return false;
-        try{
+        if (System.getenv("DB_PASS") == null) return false;
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            dbConnection= DriverManager.getConnection(
-                    DATABASE_URL,"Schotzgoblin",System.getenv("DB_PASS"));
+            dbConnection = DriverManager.getConnection(
+                    DATABASE_URL, "Schotzgoblin", System.getenv("DB_PASS"));
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public void executeStatementsOnDB(String statement,Object ... objects) {
+    public void executeStatementsOnDB(String statement, Object... objects) {
         try {
             PreparedStatement prepareStatement = dbConnection.prepareStatement(statement);
             for (int i = 0; i < objects.length; i++) {
-                prepareStatement.setObject(i+1,objects[i]);
+                prepareStatement.setObject(i + 1, objects[i]);
             }
             prepareStatement.execute();
         } catch (SQLException e) {
@@ -44,21 +40,20 @@ public class DBHandler {
         }
     }
 
-    public List<Object> readFromDB(String statement, Object ... objects) {
+    public List<Object> readFromDB(String statement, Object... objects) {
         List<Object> results = new ArrayList<>();
         List<Object> statementValues = valuesOfStatement(objects);
         try {
             PreparedStatement prepareStatement = dbConnection.prepareStatement(statement);
             for (int i = 0; i < statementValues.size(); i++) {
-                prepareStatement.setObject(i+1,statementValues.get(i));
+                prepareStatement.setObject(i + 1, statementValues.get(i));
             }
             ResultSet resultSet = prepareStatement.executeQuery();
-            while (resultSet.next())
-            {
+            while (resultSet.next()) {
                 for (Object object2 : objects) {
                     String object = (String) object2;
                     String[] split = object.split(";");
-                    if(split.length==2) {
+                    if (split.length == 2) {
                         int column = Integer.parseInt(split[0]);
                         switch (split[1]) {
                             case "BigInt":
@@ -91,16 +86,31 @@ public class DBHandler {
         return results;
     }
 
+    public User getUserFromId(long userId) {
+        User user = null;
+        try {
+            String selectedStatement = "SELECT * FROM GoUser WHERE GoUserId = ?";
+            PreparedStatement prepareStatement = dbConnection.prepareStatement(selectedStatement);
+            prepareStatement.setObject(1, userId);
+            ResultSet result = prepareStatement.executeQuery();
+            Blob profilePicture = result.getBlob(9);
+            user = new User(userId, result.getString(3), result.getString(4), result.getString(5), profilePicture.getBytes(1L, (int) profilePicture.length()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
     private List<Object> valuesOfStatement(Object[] objects) {
         List<Object> statementValues = new ArrayList<>();
         for (Object object2 : objects) {
-            try{
+            try {
                 String object = (String) object2;
                 String[] split = object.split(";");
-                if(split.length!=2){
+                if (split.length != 2) {
                     statementValues.add(object2);
                 }
-            }catch (ClassCastException e){
+            } catch (ClassCastException e) {
                 statementValues.add(object2);
             }
         }

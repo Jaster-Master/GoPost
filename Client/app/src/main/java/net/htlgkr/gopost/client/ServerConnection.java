@@ -9,15 +9,13 @@ import java.io.ObjectOutputStream;
 
 public class ServerConnection {
 
-    private final Client client;
     private ObjectOutputStream writer;
     private ObjectInputStream reader;
 
-    public ServerConnection(Client client) {
-        this.client = client;
+    public ServerConnection() {
         try {
-            this.writer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
-            this.reader = new ObjectInputStream(client.getClientSocket().getInputStream());
+            this.writer = new ObjectOutputStream(Client.getClientSocket().getOutputStream());
+            this.reader = new ObjectInputStream(Client.getClientSocket().getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }

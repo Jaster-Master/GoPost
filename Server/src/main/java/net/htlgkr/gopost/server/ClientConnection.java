@@ -2,22 +2,21 @@ package net.htlgkr.gopost.server;
 
 import net.htlgkr.gopost.database.DBHandler;
 import net.htlgkr.gopost.packet.*;
-import net.htlgkr.gopost.util.Encrypt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ClientConnection implements Runnable {
 
     private final Server server;
     private final Socket clientSocket;
-    private final ObjectOutputStream writer;
-    private final ObjectInputStream reader;
+    private ObjectOutputStream writer;
+    private ObjectInputStream reader;
     private long userId;
 
     public long getUserId() {
@@ -36,11 +35,15 @@ public class ClientConnection implements Runnable {
         return reader;
     }
 
-    public ClientConnection(Server server, Socket clientSocket, ObjectOutputStream writer, ObjectInputStream reader) {
+    public ClientConnection(Server server, Socket clientSocket) {
         this.server = server;
         this.clientSocket = clientSocket;
-        this.writer = writer;
-        this.reader = reader;
+        try {
+            this.writer = new ObjectOutputStream(clientSocket.getOutputStream());
+            this.reader = new ObjectInputStream(clientSocket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -105,11 +108,18 @@ public class ClientConnection implements Runnable {
         DBHandler dbHandler = new DBHandler();
         switch (command) {
             case "firstTimeLogin":
-                dbHandler.executeStatementsOnDB("INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)",
-                        loginPacket.getUserName(),loginPacket.getProfileName(),loginPacket.getEmail(), Encrypt.SHA512(loginPacket.getPassword()),loginPacket.isPrivate(), Timestamp.valueOf(LocalDateTime.now()));
-                break;
+                String insertStatement = "INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)";
+                dbHandler.executeStatementsOnDB(insertStatement,
+                        loginPacket.getUserName(),
+                        loginPacket.getProfileName(),
+                        loginPacket.getEmail(),
+                        loginPacket.getPassword(),
+                        Timestamp.valueOf(LocalDateTime.now()));
             case "checkIfCorrectPassword":
-                //dbHandler.readFromDB()
+                String selectStatement = "SELECT GoUserId FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
+                List<Object> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt");
+                setUserId((Long) result.get(0));
+                server.addClient(this);
                 break;
         }
     }

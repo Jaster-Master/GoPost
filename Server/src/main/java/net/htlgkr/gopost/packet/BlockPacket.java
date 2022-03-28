@@ -2,22 +2,37 @@ package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.User;
 
+import java.util.Objects;
+
 public class BlockPacket extends Packet {
-    private User blockUser;
+    private String userName;
 
     public BlockPacket() {
     }
 
-    public BlockPacket(String command, User sentByUser, User blockUser) {
+    public BlockPacket(String command, User sentByUser, String userName) {
         super(command, sentByUser);
-        this.blockUser = blockUser;
+        this.userName = userName;
     }
 
-    public User getBlockUser() {
-        return blockUser;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setBlockUser(User blockUser) {
-        this.blockUser = blockUser;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlockPacket that = (BlockPacket) o;
+        return Objects.equals(userName, that.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName);
     }
 }

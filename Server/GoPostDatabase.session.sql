@@ -1,4 +1,4 @@
-use GoPost01;
+use GoPostTest;
 DROP TABLE PostComment;
 DROP TABLE SavedPost;
 DROP TABLE GoMark;
@@ -21,7 +21,7 @@ CREATE TABLE GoUser(
     GoUserEmail VARCHAR(75) NOT NULL,
     GoUserPassword VARCHAR(130) NOT NULL,
     GoUserDescription VARCHAR(500),
-    GoUserIsPrivate BOOLEAN NOT NULL,
+    GoUserIsPrivate BOOLEAN NULL DEFAULT false,
     GoUserDateTime TIMESTAMP NOT NULL,
     GoUserProfilePicture LONGBLOB,
     CONSTRAINT GoUser_PK PRIMARY KEY (GoUserId)

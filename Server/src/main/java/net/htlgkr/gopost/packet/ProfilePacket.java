@@ -1,135 +1,41 @@
 package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.Post;
+import net.htlgkr.gopost.data.Profile;
 import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
 
+import java.util.Objects;
+
 public class ProfilePacket extends Packet {
-    private long userId;
-    private byte[] profilePicture;
-    private String profileName;
-    private String userName;
-    private String description;
-    private Post[] posts;
-    private Story[] stories;
-    private boolean isPrivate;
-    private Post[] savedPosts;
-    private User[] friends;
-    private User[] followers;
-    private User[] followed;
+    private Profile profile;
 
     public ProfilePacket() {
     }
 
-    public ProfilePacket(String command, User sentByUser, long userId, byte[] profilePicture, String profileName, String userName, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed) {
+    public ProfilePacket(String command, User sentByUser, Profile profile) {
         super(command, sentByUser);
-        this.userId = userId;
-        this.profilePicture = profilePicture;
-        this.profileName = profileName;
-        this.userName = userName;
-        this.description = description;
-        this.posts = posts;
-        this.stories = stories;
-        this.isPrivate = isPrivate;
-        this.savedPosts = savedPosts;
-        this.friends = friends;
-        this.followers = followers;
-        this.followed = followed;
+        this.profile = profile;
     }
 
-    public long getUserId() {
-        return userId;
+    public Profile getProfile() {
+        return profile;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
-    public byte[] getProfilePicture() {
-        return profilePicture;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProfilePacket that = (ProfilePacket) o;
+        return Objects.equals(profile, that.profile);
     }
 
-    public void setProfilePicture(byte[] profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getProfileName() {
-        return profileName;
-    }
-
-    public void setProfileName(String profileName) {
-        this.profileName = profileName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Post[] getPosts() {
-        return posts;
-    }
-
-    public void setPosts(Post[] posts) {
-        this.posts = posts;
-    }
-
-    public Story[] getStories() {
-        return stories;
-    }
-
-    public void setStories(Story[] stories) {
-        this.stories = stories;
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public void setPrivate(boolean aPrivate) {
-        isPrivate = aPrivate;
-    }
-
-    public Post[] getSavedPosts() {
-        return savedPosts;
-    }
-
-    public void setSavedPosts(Post[] savedPosts) {
-        this.savedPosts = savedPosts;
-    }
-
-    public User[] getFriends() {
-        return friends;
-    }
-
-    public void setFriends(User[] friends) {
-        this.friends = friends;
-    }
-
-    public User[] getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(User[] followers) {
-        this.followers = followers;
-    }
-
-    public User[] getFollowed() {
-        return followed;
-    }
-
-    public void setFollowed(User[] followed) {
-        this.followed = followed;
+    @Override
+    public int hashCode() {
+        return Objects.hash(profile);
     }
 }

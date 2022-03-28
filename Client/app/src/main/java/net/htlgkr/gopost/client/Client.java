@@ -9,23 +9,18 @@ import java.net.Socket;
 
 public class Client {
 
-    private Profile client;
-    private ObservableValue<Boolean> isConnected;
-    private Socket clientSocket;
-    private final int port;
-    private final String ipAddress;
-    private ServerConnection connection;
+    private static Profile client;
+    private static ObservableValue<Boolean> isConnected;
+    private static Socket clientSocket;
+    private static final int PORT = 10443;
+    private static final String IP_ADDRESS = "80.243.163.117";
+    private static ServerConnection connection;
 
-    public Client(int port, String ipAddress) {
-        this.port = port;
-        this.ipAddress = ipAddress;
-    }
-
-    public boolean openConnection() {
+    public static boolean openConnection() {
         clientSocket = new Socket();
         try {
-            clientSocket.connect(new InetSocketAddress(ipAddress, port));
-            connection = new ServerConnection(this);
+            clientSocket.connect(new InetSocketAddress(IP_ADDRESS, PORT));
+            connection = new ServerConnection();
             isConnected.setValue(true);
             return true;
         } catch (IOException e) {
@@ -33,7 +28,7 @@ public class Client {
         }
     }
 
-    public boolean closeConnection() {
+    public static boolean closeConnection() {
         try {
             clientSocket.close();
             connection = null;
@@ -44,27 +39,27 @@ public class Client {
         }
     }
 
-    public Profile getClient() {
+    public static Profile getClient() {
         return client;
     }
 
-    public ObservableValue<Boolean> getIsConnected() {
+    public static ObservableValue<Boolean> getIsConnected() {
         return isConnected;
     }
 
-    public Socket getClientSocket() {
+    public static Socket getClientSocket() {
         return clientSocket;
     }
 
-    public int getPort() {
-        return port;
+    public static int getPort() {
+        return PORT;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public static String getIpAddress() {
+        return IP_ADDRESS;
     }
 
-    public ServerConnection getConnection() {
+    public static ServerConnection getConnection() {
         return connection;
     }
 }

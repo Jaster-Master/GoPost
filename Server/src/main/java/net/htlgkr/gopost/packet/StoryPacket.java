@@ -1,76 +1,39 @@
 package net.htlgkr.gopost.packet;
 
+import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
-
-import java.time.LocalDateTime;
-import java.util.Locale;
+import java.util.Objects;
 
 public class StoryPacket extends Packet {
-    private byte[][] story;
-    private String url;
-    private User fromUser;
-    private LocalDateTime releaseDate;
-    private User[] likes;
-    private Locale location;
+
+    private Story story;
 
     public StoryPacket() {
     }
 
-    public StoryPacket(String command, User sentByUser, byte[][] story, String url, User fromUser, LocalDateTime releaseDate, User[] likes, Locale location) {
+    public StoryPacket(String command, User sentByUser, Story story) {
         super(command, sentByUser);
         this.story = story;
-        this.url = url;
-        this.fromUser = fromUser;
-        this.releaseDate = releaseDate;
-        this.likes = likes;
-        this.location = location;
     }
 
-    public byte[][] getStory() {
+    public Story getStory() {
         return story;
     }
 
-    public void setStory(byte[][] story) {
+    public void setStory(Story story) {
         this.story = story;
     }
 
-    public String getUrl() {
-        return url;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StoryPacket that = (StoryPacket) o;
+        return Objects.equals(story, that.story);
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public User getFromUser() {
-        return fromUser;
-    }
-
-    public void setFromUser(User fromUser) {
-        this.fromUser = fromUser;
-    }
-
-    public LocalDateTime getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public User[] getLikes() {
-        return likes;
-    }
-
-    public void setLikes(User[] likes) {
-        this.likes = likes;
-    }
-
-    public Locale getLocation() {
-        return location;
-    }
-
-    public void setLocation(Locale location) {
-        this.location = location;
+    @Override
+    public int hashCode() {
+        return Objects.hash(story);
     }
 }
