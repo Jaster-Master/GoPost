@@ -7,8 +7,8 @@ import java.util.Objects;
 public class User implements Serializable {
 
     private long userId;
-    private String profileName;
     private String userName;
+    private String profileName;
     private String email;
     private String password;
     private byte[] profilePicture;
@@ -16,10 +16,10 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(long userId, String profileName, String userName, String email, String password, byte[] profilePicture) {
+    public User(long userId, String userName, String profileName, String email, String password, byte[] profilePicture) {
         this.userId = userId;
-        this.profileName = profileName;
         this.userName = userName;
+        this.profileName = profileName;
         this.email = email;
         this.password = password;
         this.profilePicture = profilePicture;
@@ -33,20 +33,20 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
-    public String getProfileName() {
-        return profileName;
-    }
-
-    public void setProfileName(String profileName) {
-        this.profileName = profileName;
-    }
-
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 
     public String getEmail() {

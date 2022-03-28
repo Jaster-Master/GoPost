@@ -8,8 +8,8 @@ import java.util.Objects;
 public class Profile implements Serializable {
     private long userId;
     private byte[] profilePicture;
-    private String profileName;
     private String userName;
+    private String profileName;
     private String email;
     private String password;
     private String description;
@@ -25,11 +25,11 @@ public class Profile implements Serializable {
     public Profile() {
     }
 
-    public Profile(long userId, byte[] profilePicture, String profileName, String userName, String email, String password, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed, LocalDateTime createdDate) {
+    public Profile(long userId, byte[] profilePicture, String userName, String profileName, String email, String password, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed, LocalDateTime createdDate) {
         this.userId = userId;
         this.profilePicture = profilePicture;
-        this.profileName = profileName;
         this.userName = userName;
+        this.profileName = profileName;
         this.email = email;
         this.password = password;
         this.description = description;
@@ -59,20 +59,20 @@ public class Profile implements Serializable {
         this.profilePicture = profilePicture;
     }
 
-    public String getProfileName() {
-        return profileName;
-    }
-
-    public void setProfileName(String profileName) {
-        this.profileName = profileName;
-    }
-
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 
     public String getEmail() {
