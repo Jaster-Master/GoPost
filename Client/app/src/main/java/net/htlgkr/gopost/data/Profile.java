@@ -8,8 +8,10 @@ import java.util.Objects;
 public class Profile implements Serializable {
     private long userId;
     private byte[] profilePicture;
-    private String profileName;
     private String userName;
+    private String profileName;
+    private String email;
+    private String password;
     private String description;
     private Post[] posts;
     private Story[] stories;
@@ -23,11 +25,13 @@ public class Profile implements Serializable {
     public Profile() {
     }
 
-    public Profile(long userId, byte[] profilePicture, String profileName, String userName, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed, LocalDateTime createdDate) {
+    public Profile(long userId, byte[] profilePicture, String userName, String profileName, String email, String password, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed, LocalDateTime createdDate) {
         this.userId = userId;
         this.profilePicture = profilePicture;
-        this.profileName = profileName;
         this.userName = userName;
+        this.profileName = profileName;
+        this.email = email;
+        this.password = password;
         this.description = description;
         this.posts = posts;
         this.stories = stories;
@@ -55,6 +59,14 @@ public class Profile implements Serializable {
         this.profilePicture = profilePicture;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getProfileName() {
         return profileName;
     }
@@ -63,12 +75,20 @@ public class Profile implements Serializable {
         this.profileName = profileName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getDescription() {
@@ -148,12 +168,12 @@ public class Profile implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Profile profile = (Profile) o;
-        return userId == profile.userId && isPrivate == profile.isPrivate && Arrays.equals(profilePicture, profile.profilePicture) && Objects.equals(profileName, profile.profileName) && Objects.equals(userName, profile.userName) && Objects.equals(description, profile.description) && Arrays.equals(posts, profile.posts) && Arrays.equals(stories, profile.stories) && Arrays.equals(savedPosts, profile.savedPosts) && Arrays.equals(friends, profile.friends) && Arrays.equals(followers, profile.followers) && Arrays.equals(followed, profile.followed) && Objects.equals(createdDate, profile.createdDate);
+        return userId == profile.userId && isPrivate == profile.isPrivate && Arrays.equals(profilePicture, profile.profilePicture) && Objects.equals(profileName, profile.profileName) && Objects.equals(userName, profile.userName) && Objects.equals(email, profile.email) && Objects.equals(password, profile.password) && Objects.equals(description, profile.description) && Arrays.equals(posts, profile.posts) && Arrays.equals(stories, profile.stories) && Arrays.equals(savedPosts, profile.savedPosts) && Arrays.equals(friends, profile.friends) && Arrays.equals(followers, profile.followers) && Arrays.equals(followed, profile.followed) && Objects.equals(createdDate, profile.createdDate);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(userId, profileName, userName, description, isPrivate, createdDate);
+        int result = Objects.hash(userId, profileName, userName, email, password, description, isPrivate, createdDate);
         result = 31 * result + Arrays.hashCode(profilePicture);
         result = 31 * result + Arrays.hashCode(posts);
         result = 31 * result + Arrays.hashCode(stories);

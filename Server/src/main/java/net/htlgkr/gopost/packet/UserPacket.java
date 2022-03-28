@@ -4,13 +4,13 @@ import net.htlgkr.gopost.data.User;
 
 import java.util.Objects;
 
-public class BlockPacket extends Packet {
+public class UserPacket extends Packet {
     private String userName;
 
-    public BlockPacket() {
+    public UserPacket() {
     }
 
-    public BlockPacket(String command, User sentByUser, String userName) {
+    public UserPacket(String command, User sentByUser, String userName) {
         super(command, sentByUser);
         this.userName = userName;
     }
@@ -27,7 +27,7 @@ public class BlockPacket extends Packet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BlockPacket that = (BlockPacket) o;
+        UserPacket that = (UserPacket) o;
         return Objects.equals(userName, that.userName);
     }
 

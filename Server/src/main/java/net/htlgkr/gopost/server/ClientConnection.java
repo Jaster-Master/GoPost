@@ -53,8 +53,8 @@ public class ClientConnection implements Runnable {
             while (true) {
                 Object packet = reader.readObject();
                 if (!(packet instanceof Packet)) continue;
-                if (packet instanceof BlockPacket blockPacket) {
-                    handleBlockPacket(blockPacket);
+                if (packet instanceof UserPacket userPacket) {
+                    handleBlockPacket(userPacket);
                 } else if (packet instanceof LoginPacket loginPacket) {
                     handleLoginPacket(loginPacket);
                 } else if (packet instanceof PostPacket postPacket) {
@@ -125,8 +125,8 @@ public class ClientConnection implements Runnable {
         }
     }
 
-    private void handleBlockPacket(BlockPacket blockPacket) {
-        String command = blockPacket.getCommand();
+    private void handleBlockPacket(UserPacket userPacket) {
+        String command = userPacket.getCommand();
         switch (command) {
             case "":
                 break;

@@ -48,7 +48,7 @@ public class DBHandler {
         try {
             PreparedStatement prepareStatement = dbConnection.prepareStatement(statement);
             for (int i = 0; i < statementValues.size(); i++) {
-                prepareStatement.setObject(i + 1, statementValues.get(i));
+                prepareStatement.setObject(i + 1, statementValues.get(i).getObject());
             }
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next()) {
@@ -79,7 +79,7 @@ public class DBHandler {
     public User getUserFromId(long userId) {
         String selectedStatement = "SELECT * FROM GoUser WHERE GoUserId = ?";
         List<DBObject> result = readFromDB(selectedStatement, userId, "2;String", "3;String", "4;String", "5;String", "9;Blob");
-        return new User(userId, result.get(0).getString(), result.get(1).getString(), result.get(2).getString(), result.get(3).getBlob());
+        return new User(userId, result.get(0).getString(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getBlob());
     }
 
     private List<DBObject> valuesOfStatement(DBObject[] objects) {
