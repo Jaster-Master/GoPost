@@ -1,46 +1,74 @@
 package net.htlgkr.gopost.database;
 
 import java.io.Serializable;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class DBObject implements Serializable {
+
     private Object object;
-    private boolean isEncrypted;
 
     public DBObject() {
     }
 
-    public DBObject(Object object, boolean isEncrypted) {
+    public DBObject(Object object) {
         this.object = object;
-        this.isEncrypted = isEncrypted;
     }
 
     public Object getObject() {
         return object;
     }
 
+    public Integer getInteger() {
+        return (Integer) object;
+    }
+
+    public Long getLong() {
+        return (Long) object;
+    }
+
+    public Boolean getBoolean() {
+        return (Boolean) object;
+    }
+
+    public String getString() {
+        return (String) object;
+    }
+
+    public Double getDouble() {
+        return (Double) object;
+    }
+
+    public byte[] getBlob() {
+        Blob blob = (Blob) object;
+        try {
+            return blob.getBytes(1L, (int) blob.length());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Timestamp getTimestamp() {
+        return (Timestamp) object;
+    }
+
     public void setObject(Object object) {
         this.object = object;
-    }
-
-    public boolean isEncrypted() {
-        return isEncrypted;
-    }
-
-    public void setEncrypted(boolean encrypted) {
-        this.isEncrypted = encrypted;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DBObject that = (DBObject) o;
-        return isEncrypted == that.isEncrypted && Objects.equals(object, that.object);
+        DBObject dbObject = (DBObject) o;
+        return Objects.equals(object, dbObject.object);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(object, isEncrypted);
+        return Objects.hash(object);
     }
 }

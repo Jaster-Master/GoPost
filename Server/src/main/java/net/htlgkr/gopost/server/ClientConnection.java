@@ -1,6 +1,7 @@
 package net.htlgkr.gopost.server;
 
 import net.htlgkr.gopost.database.DBHandler;
+import net.htlgkr.gopost.database.DBObject;
 import net.htlgkr.gopost.packet.*;
 
 import java.io.IOException;
@@ -117,8 +118,8 @@ public class ClientConnection implements Runnable {
                         Timestamp.valueOf(LocalDateTime.now()));
             case "checkIfCorrectPassword":
                 String selectStatement = "SELECT GoUserId FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
-                List<Object> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt");
-                setUserId((Long) result.get(0));
+                List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt");
+                setUserId(result.get(0).getLong());
                 server.addClient(this);
                 break;
         }

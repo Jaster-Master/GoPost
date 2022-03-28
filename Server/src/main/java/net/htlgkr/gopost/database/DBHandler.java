@@ -4,6 +4,7 @@ import net.htlgkr.gopost.data.User;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DBHandler {
@@ -40,9 +41,10 @@ public class DBHandler {
         }
     }
 
-    public List<Object> readFromDB(String statement, Object... objects) {
-        List<Object> results = new ArrayList<>();
-        List<Object> statementValues = valuesOfStatement(objects);
+    public List<DBObject> readFromDB(String statement, Object... objects) {
+        List<DBObject> results = new ArrayList<>();
+        List<DBObject> dbObjects = Arrays.stream(objects).map(DBObject::new).toList();
+        List<DBObject> statementValues = valuesOfStatement(dbObjects.toArray(DBObject[]::new));
         try {
             PreparedStatement prepareStatement = dbConnection.prepareStatement(statement);
             for (int i = 0; i < statementValues.size(); i++) {
@@ -50,30 +52,18 @@ public class DBHandler {
             }
             ResultSet resultSet = prepareStatement.executeQuery();
             while (resultSet.next()) {
-                for (Object object2 : objects) {
-                    String object = (String) object2;
-                    String[] split = object.split(";");
+                for (DBObject object : dbObjects) {
+                    String string = object.getString();
+                    String[] split = string.split(";");
                     if (split.length == 2) {
                         int column = Integer.parseInt(split[0]);
                         switch (split[1]) {
-                            case "BigInt":
-                                results.add(resultSet.getInt(column));
-                                break;
-                            case "String":
-                                results.add(resultSet.getString(column));
-                                break;
-                            case "Boolean":
-                                results.add(resultSet.getBoolean(column));
-                                break;
-                            case "Timestamp":
-                                results.add(resultSet.getTimestamp(column));
-                                break;
-                            case "Blob":
-                                results.add(resultSet.getBlob(column));
-                                break;
-                            case "Double":
-                                results.add(resultSet.getDouble(column));
-                                break;
+                            case "BigInt" -> results.add(new DBObject(resultSet.getLong(column)));
+                            case "String" -> results.add(new DBObject(resultSet.getString(column)));
+                            case "Boolean" -> results.add(new DBObject(resultSet.getBoolean(column)));
+                            case "Timestamp" -> results.add(new DBObject(resultSet.getTimestamp(column)));
+                            case "Blob" -> results.add(new DBObject(resultSet.getBlob(column)));
+                            case "Double" -> results.add(new DBObject(resultSet.getDouble(column)));
                         }
                     }
                 }
@@ -87,31 +77,22 @@ public class DBHandler {
     }
 
     public User getUserFromId(long userId) {
-        User user = null;
-        try {
-            String selectedStatement = "SELECT * FROM GoUser WHERE GoUserId = ?";
-            PreparedStatement prepareStatement = dbConnection.prepareStatement(selectedStatement);
-            prepareStatement.setObject(1, userId);
-            ResultSet result = prepareStatement.executeQuery();
-            Blob profilePicture = result.getBlob(9);
-            user = new User(userId, result.getString(3), result.getString(4), result.getString(5), profilePicture.getBytes(1L, (int) profilePicture.length()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return user;
+        String selectedStatement = "SELECT * FROM GoUser WHERE GoUserId = ?";
+        List<DBObject> result = readFromDB(selectedStatement, userId, "2;String", "3;String", "4;String", "5;String", "9;Blob");
+        return new User(userId, result.get(0).getString(), result.get(1).getString(), result.get(2).getString(), result.get(3).getBlob());
     }
 
-    private List<Object> valuesOfStatement(Object[] objects) {
-        List<Object> statementValues = new ArrayList<>();
-        for (Object object2 : objects) {
+    private List<DBObject> valuesOfStatement(DBObject[] objects) {
+        List<DBObject> statementValues = new ArrayList<>();
+        for (DBObject object : objects) {
             try {
-                String object = (String) object2;
-                String[] split = object.split(";");
+                String string = object.getString();
+                String[] split = string.split(";");
                 if (split.length != 2) {
-                    statementValues.add(object2);
+                    statementValues.add(new DBObject(string));
                 }
             } catch (ClassCastException e) {
-                statementValues.add(object2);
+                statementValues.add(object);
             }
         }
         return statementValues;
