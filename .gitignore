@@ -73,3 +73,5 @@ Server/*.hprof
 Server/target/
 Server/*.xml
 !Server/pom.xml
+
+Server/out/
