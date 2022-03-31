@@ -50,8 +50,8 @@ public class ClientConnection implements Runnable {
 
     @Override
     public void run() {
-        try {
-            while (true) {
+        while (!clientSocket.isClosed()) {
+            try {
                 Object readObject = reader.readObject();
                 System.out.println("Object received");
                 if (!(readObject instanceof Packet packet)) continue;
@@ -69,8 +69,16 @@ public class ClientConnection implements Runnable {
                 } else if (readObject instanceof StoryPacket storyPacket) {
                     handleStoryPacket(storyPacket);
                 }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        } catch (IOException | ClassNotFoundException e) {
+        }
+    }
+
+    private void closeConnection() {
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

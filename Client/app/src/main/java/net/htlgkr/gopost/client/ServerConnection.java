@@ -1,7 +1,5 @@
 package net.htlgkr.gopost.client;
 
-import android.util.Log;
-
 import net.htlgkr.gopost.packet.Packet;
 import net.htlgkr.gopost.util.ObservableValue;
 
@@ -18,7 +16,6 @@ public class ServerConnection {
         try {
             this.writer = new ObjectOutputStream(Client.getClientSocket().getOutputStream());
             this.reader = new ObjectInputStream(Client.getClientSocket().getInputStream());
-            Log.e("AMONG", "READER");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +34,6 @@ public class ServerConnection {
 
     private void receivePacket(ObservableValue<Packet> packetValue) {
         try {
-            Log.e("AMONG", "RECEIVE");
             Object readObject = reader.readObject();
             if (readObject instanceof Packet && packetValue != null) {
                 packetValue.setValue((Packet) readObject);

@@ -15,7 +15,7 @@ public class Server {
 
     private static final Map<Long, ClientConnection> CLIENTS = new HashMap<>();
     private ServerSocket serverSocket;
-    private static final int PORT = 10443;
+    private static final int PORT = 16663;
     private ObservableValue<Boolean> isRunning;
 
     public void startServer(String[] args) {

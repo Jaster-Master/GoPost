@@ -1,7 +1,5 @@
 package net.htlgkr.gopost.client;
 
-import android.util.Log;
-
 import net.htlgkr.gopost.activity.LoginActivity;
 import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.util.ObservableValue;
@@ -46,7 +44,6 @@ public class Client {
             clientSocket.connect(new InetSocketAddress(ipAddress, port));
             connection = new ServerConnection();
             isConnected.setValue(true);
-            Log.e("AMONG", "SOCKET");
             return true;
         } catch (IOException e) {
             e.printStackTrace();
