@@ -75,4 +75,3 @@ Server/*.xml
 !Server/pom.xml
 
 Server/out/
-Server/META-INF/
