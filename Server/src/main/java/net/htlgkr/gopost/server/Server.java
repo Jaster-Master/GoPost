@@ -15,7 +15,7 @@ public class Server {
 
     private static final Map<Long, ClientConnection> CLIENTS = new HashMap<>();
     private ServerSocket serverSocket;
-    private static final int PORT = 10443;
+    private static final int PORT = 16663;
     private ObservableValue<Boolean> isRunning;
 
     public void startServer(String[] args) {
@@ -45,6 +45,7 @@ public class Server {
             try {
                 Socket clientSocket = serverSocket.accept();
                 writer.println(LocalDateTime.now() + " ; Client connected");
+                System.out.println(LocalDateTime.now() + " ; Client connected");
                 ClientConnection clientConnection = new ClientConnection(this, clientSocket);
                 new Thread(clientConnection).start();
             } catch (IOException e) {

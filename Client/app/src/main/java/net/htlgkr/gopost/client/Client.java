@@ -1,29 +1,52 @@
 package net.htlgkr.gopost.client;
 
-import net.htlgkr.gopost.data.Profile;
+import net.htlgkr.gopost.activity.LoginActivity;
+import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.util.ObservableValue;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class Client {
 
-    private static final int PORT = 10443;
-    private static final String IP_ADDRESS = "80.243.162.116";
+    private static final String INFO_FILE_NAME = "connection.conf";
+    private static int port;
+    private static String ipAddress;
     private static final ObservableValue<Boolean> isConnected = new ObservableValue<>();
     private static Socket clientSocket;
     private static ServerConnection connection;
-    private static Profile client;
+    private static User client;
+
+    static {
+        readInfo();
+    }
+
+    private static void readInfo() {
+        try {
+            InputStream inputStream = LoginActivity.instance.getAssets().open(INFO_FILE_NAME);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line = reader.readLine();
+            String[] info = line.split(":");
+            ipAddress = info[0];
+            port = Integer.parseInt(info[1]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static boolean openConnection() {
         clientSocket = new Socket();
         try {
-            clientSocket.connect(new InetSocketAddress(IP_ADDRESS, PORT));
+            clientSocket.connect(new InetSocketAddress(ipAddress, port));
             connection = new ServerConnection();
             isConnected.setValue(true);
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -39,7 +62,7 @@ public class Client {
         }
     }
 
-    public static Profile getClient() {
+    public static User getClient() {
         return client;
     }
 
@@ -52,11 +75,11 @@ public class Client {
     }
 
     public static int getPort() {
-        return PORT;
+        return port;
     }
 
     public static String getIpAddress() {
-        return IP_ADDRESS;
+        return ipAddress;
     }
 
     public static ServerConnection getConnection() {
