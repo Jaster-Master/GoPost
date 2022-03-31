@@ -45,6 +45,7 @@ public class Server {
             try {
                 Socket clientSocket = serverSocket.accept();
                 writer.println(LocalDateTime.now() + " ; Client connected");
+                System.out.println(LocalDateTime.now() + " ; Client connected");
                 ClientConnection clientConnection = new ClientConnection(this, clientSocket);
                 new Thread(clientConnection).start();
             } catch (IOException e) {

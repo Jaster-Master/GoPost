@@ -1,5 +1,6 @@
 package net.htlgkr.gopost.server;
 
+import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.database.DBHandler;
 import net.htlgkr.gopost.database.DBObject;
 import net.htlgkr.gopost.packet.*;
@@ -51,19 +52,21 @@ public class ClientConnection implements Runnable {
     public void run() {
         try {
             while (true) {
-                Object packet = reader.readObject();
-                if (!(packet instanceof Packet)) continue;
-                if (packet instanceof UserPacket userPacket) {
+                Object readObject = reader.readObject();
+                System.out.println("Object received");
+                if (!(readObject instanceof Packet packet)) continue;
+                System.out.println("Packet received: " + packet.getCommand());
+                if (readObject instanceof UserPacket userPacket) {
                     handleBlockPacket(userPacket);
-                } else if (packet instanceof LoginPacket loginPacket) {
+                } else if (readObject instanceof LoginPacket loginPacket) {
                     handleLoginPacket(loginPacket);
-                } else if (packet instanceof PostPacket postPacket) {
+                } else if (readObject instanceof PostPacket postPacket) {
                     handlePostPacket(postPacket);
-                } else if (packet instanceof ProfilePacket profilePacket) {
+                } else if (readObject instanceof ProfilePacket profilePacket) {
                     handleProfilePacket(profilePacket);
-                } else if (packet instanceof ReportPacket reportPacket) {
+                } else if (readObject instanceof ReportPacket reportPacket) {
                     handleReportPacket(reportPacket);
-                } else if (packet instanceof StoryPacket storyPacket) {
+                } else if (readObject instanceof StoryPacket storyPacket) {
                     handleStoryPacket(storyPacket);
                 }
             }
@@ -109,6 +112,7 @@ public class ClientConnection implements Runnable {
         DBHandler dbHandler = new DBHandler();
         switch (command) {
             case "firstTimeLogin":
+                System.out.println("FirstTimeLogin");
                 String insertStatement = "INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)";
                 dbHandler.executeStatementsOnDB(insertStatement,
                         loginPacket.getUserName(),
@@ -117,11 +121,14 @@ public class ClientConnection implements Runnable {
                         loginPacket.getPassword(),
                         Timestamp.valueOf(LocalDateTime.now()));
             case "checkIfCorrectPassword":
+                System.out.println("checkIfCorrectPassword");
                 String selectStatement = "SELECT GoUserId FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
                 List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt");
                 setUserId(result.get(0).getLong());
                 server.addClient(this);
-                break;
+
+                User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), loginPacket.getSentByUser().getProfilePicture());
+                sendPacket(new Packet("answer", user));
         }
     }
 
@@ -130,6 +137,16 @@ public class ClientConnection implements Runnable {
         switch (command) {
             case "":
                 break;
+        }
+    }
+
+    private boolean sendPacket(Packet packet) {
+        try {
+            writer.writeObject(packet);
+            writer.flush();
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 }
