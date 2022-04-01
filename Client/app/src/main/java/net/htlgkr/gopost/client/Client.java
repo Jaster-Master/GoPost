@@ -41,7 +41,7 @@ public class Client {
     public static boolean openConnection() {
         clientSocket = new Socket();
         try {
-            clientSocket.connect(new InetSocketAddress(ipAddress, port));
+            clientSocket.connect(new InetSocketAddress(ipAddress, port), 30000);
             connection = new ServerConnection();
             isConnected.setValue(true);
             return true;

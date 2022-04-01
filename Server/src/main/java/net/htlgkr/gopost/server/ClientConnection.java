@@ -5,6 +5,7 @@ import net.htlgkr.gopost.database.DBHandler;
 import net.htlgkr.gopost.database.DBObject;
 import net.htlgkr.gopost.packet.*;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -71,6 +72,9 @@ public class ClientConnection implements Runnable {
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
+                if (e instanceof EOFException) {
+                    return;
+                }
             }
         }
     }
