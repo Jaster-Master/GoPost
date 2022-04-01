@@ -135,7 +135,7 @@ public class ClientConnection implements Runnable {
             case "checkIfCorrectPassword":
                 System.out.println("checkIfCorrectPassword");
                 String selectStatement = "SELECT GoUserId, GoUserProfilePicture FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
-                List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;LongBlob");
+                List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;Blob");
                 setUserId(result.get(0).getLong());
                 server.addClient(this);
 
