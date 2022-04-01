@@ -134,12 +134,12 @@ public class ClientConnection implements Runnable {
                         Timestamp.valueOf(LocalDateTime.now()));
             case "checkIfCorrectPassword":
                 System.out.println("checkIfCorrectPassword");
-                String selectStatement = "SELECT GoUserId FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
-                List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt");
+                String selectStatement = "SELECT GoUserId, GoUserProfilePicture FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
+                List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;LongBlob");
                 setUserId(result.get(0).getLong());
                 server.addClient(this);
 
-                User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), loginPacket.getSentByUser().getProfilePicture());
+                User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), result.get(0).getBlob());
                 sendPacket(new Packet("answer", user));
         }
     }
