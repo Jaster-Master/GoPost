@@ -42,6 +42,7 @@ public class DBObject implements Serializable {
     }
 
     public byte[] getBlob() {
+        if (object == null) return null;
         Blob blob = (Blob) object;
         try {
             return blob.getBytes(1L, (int) blob.length());

@@ -1,7 +1,6 @@
 package net.htlgkr.gopost.server;
 
 import net.htlgkr.gopost.data.User;
-import net.htlgkr.gopost.database.DBHandler;
 import net.htlgkr.gopost.database.DBObject;
 import net.htlgkr.gopost.packet.*;
 
@@ -121,25 +120,25 @@ public class ClientConnection implements Runnable {
 
     private void handleLoginPacket(LoginPacket loginPacket) {
         String command = loginPacket.getCommand();
-        DBHandler dbHandler = new DBHandler();
         switch (command) {
             case "firstTimeLogin":
                 System.out.println("FirstTimeLogin");
                 String insertStatement = "INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)";
-                dbHandler.executeStatementsOnDB(insertStatement,
+                Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
                         loginPacket.getUserName(),
                         loginPacket.getProfileName(),
                         loginPacket.getEmail(),
                         loginPacket.getPassword(),
+                        false,
                         Timestamp.valueOf(LocalDateTime.now()));
             case "checkIfCorrectPassword":
                 System.out.println("checkIfCorrectPassword");
                 String selectStatement = "SELECT GoUserId, GoUserProfilePicture FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
-                List<DBObject> result = dbHandler.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;Blob");
+                List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;Blob");
                 setUserId(result.get(0).getLong());
                 server.addClient(this);
 
-                User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), result.get(0).getBlob());
+                User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), result.get(1).getBlob());
                 sendPacket(new Packet("answer", user));
         }
     }

@@ -1,5 +1,6 @@
 package net.htlgkr.gopost.server;
 
+import net.htlgkr.gopost.database.DBHandler;
 import net.htlgkr.gopost.util.ObservableValue;
 
 import java.io.FileWriter;
@@ -17,6 +18,7 @@ public class Server {
     private ServerSocket serverSocket;
     private static final int PORT = 16663;
     private ObservableValue<Boolean> isRunning;
+    public static final DBHandler DB_HANDLER = new DBHandler();
 
     public void startServer(String[] args) {
         isRunning = new ObservableValue<>(true);
