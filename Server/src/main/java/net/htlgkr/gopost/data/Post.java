@@ -21,12 +21,12 @@ public class Post implements Serializable {
     public Post() {
     }
 
-    public Post(List<byte[]> pictures, User fromUser, String url, LocalDateTime releaseDate, GoLocation location, String description, User[] likes, Comment[] comments, User[] marks) {
+    public Post(List<byte[]> pictures, User fromUser, String url, LocalDateTime createdDate, GoLocation location, String description, User[] likes, Comment[] comments, User[] marks) {
         this.pictures = pictures;
         this.url = url;
         this.description = description;
         this.fromUser = fromUser;
-        this.createdDate = releaseDate;
+        this.createdDate = createdDate;
         this.likes = likes;
         this.comments = comments;
         this.marks = marks;
