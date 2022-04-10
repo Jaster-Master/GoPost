@@ -90,6 +90,12 @@ public class DBHandler {
         return new User(userId, result.get(0).getString(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getBlob());
     }
 
+    public User getUserFromName(String userName) {
+        String selectedStatement = "SELECT * FROM GoUser WHERE GoUserName = ?";
+        List<DBObject> result = readFromDB(selectedStatement, userName, "1:BigInt", "2;String", "3;String", "4;String", "5;String", "9;Blob");
+        return new User(result.get(0).getLong(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getString(), result.get(5).getBlob());
+    }
+
     private List<DBObject> valuesOfStatement(DBObject[] objects) {
         List<DBObject> statementValues = new ArrayList<>();
         for (DBObject object : objects) {
