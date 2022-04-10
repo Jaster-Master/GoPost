@@ -10,15 +10,17 @@ A new revolutionary social media platform!
 
 ## Side Notes
 
-## Developers
-
-Julian Zecher
-
-Max Kammerer
+## Product Owner
 
 Lukas Wilflingseder
 
+## Developers
+
 Jakob Gschwendtner
+
+Max Kammerer
+
+Julian Zecher
 
 ## Documents
 
