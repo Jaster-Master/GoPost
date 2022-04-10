@@ -10,6 +10,10 @@ A new revolutionary social media platform!
 
 ## Side Notes
 
+## Scrum Master
+
+Julian Zecher
+
 ## Product Owner
 
 Lukas Wilflingseder
@@ -19,6 +23,8 @@ Lukas Wilflingseder
 Jakob Gschwendtner
 
 Max Kammerer
+
+Lukas Wilflingseder
 
 Julian Zecher
 
