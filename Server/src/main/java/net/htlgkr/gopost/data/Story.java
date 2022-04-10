@@ -15,7 +15,7 @@ public class Story implements Serializable {
     public Story() {
     }
 
-    public Story(List<byte[]> story, String url, User fromUser, LocalDateTime createdDate, GoLocation location) {
+    public Story(List<byte[]> story, User fromUser, String url, LocalDateTime createdDate, GoLocation location) {
         this.story = story;
         this.url = url;
         this.fromUser = fromUser;
