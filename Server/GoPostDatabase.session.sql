@@ -81,6 +81,7 @@ CREATE TABLE ReportedGoUser
     ReportedGoUserId BIGINT NOT NULL auto_increment,
     Reported         BIGINT,
     Reporter         BIGINT,
+    Reason VARCHAR(500),
     CONSTRAINT ReportedGoUser_FK FOREIGN KEY (Reported)
         REFERENCES GoUser (GoUserId) ON DELETE SET NULL,
     CONSTRAINT ReporterGoUser_FK FOREIGN KEY (Reporter)
