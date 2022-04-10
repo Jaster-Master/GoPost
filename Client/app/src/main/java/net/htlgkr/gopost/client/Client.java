@@ -39,9 +39,8 @@ public class Client {
     }
 
     public static boolean openConnection() {
-        clientSocket = new Socket();
         try {
-            clientSocket.connect(new InetSocketAddress(ipAddress, port));
+            clientSocket = new Socket(ipAddress,port);
             connection = new ServerConnection();
             isConnected.setValue(true);
             return true;
