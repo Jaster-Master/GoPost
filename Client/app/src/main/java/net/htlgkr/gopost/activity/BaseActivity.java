@@ -6,12 +6,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class BaseActivity extends AppCompatActivity {
+
+    public static String tag;
     public static BaseActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+        tag = instance.getClass().getSimpleName();
         setTheme(savedInstanceState);
     }
 

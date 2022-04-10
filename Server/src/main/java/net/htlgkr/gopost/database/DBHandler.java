@@ -2,6 +2,9 @@ package net.htlgkr.gopost.database;
 
 import net.htlgkr.gopost.data.User;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,16 +20,21 @@ public class DBHandler {
     }
 
     private boolean startDBConnection() {
-        if (System.getenv("DB_PASS") == null) return false;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            dbConnection = DriverManager.getConnection(
-                    DATABASE_URL, "Schotzgoblin", System.getenv("DB_PASS"));
+            dbConnection = DriverManager.getConnection(DATABASE_URL, "Schotzgoblin", readPassword());
             return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private String readPassword() {
+        try {
+            return new BufferedReader(new FileReader("DB_P.lock")).readLine();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     public void executeStatementsOnDB(String statement, Object... objects) {

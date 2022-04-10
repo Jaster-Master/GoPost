@@ -77,3 +77,4 @@ Server/*.xml
 !Server/pom.xml
 
 Server/out/
+Server/log.txt
