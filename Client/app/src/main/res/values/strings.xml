@@ -9,4 +9,11 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="fullname_zecher">Julian Zecher</string>
+    <string name="fullname_kammerer">Max Kammerer</string>
+    <string name="fullname_gschwendtner">Jakob Gschwendtner</string>
+    <string name="fullname_wilfingseder">Lukas Wilfingseder</string>
+    <string name="fullnames_wilfingseder_kammerer">Lukas Wilfingseder, Max Kammerer,</string>
+    <string name="fullnames_zecher_gschwendtner">Julian Zecher, Jakob Gschwendtner</string>
+    <!-- TODO: Remove or change this placeholder text -->
 </resources>
