@@ -100,6 +100,18 @@ public class DBTest {
     }
 
     @Test
+    public void uploadPostNoPicturesTest() {
+        System.out.println("UploadPostNoPicturesTest");
+        List<byte[]> bytes = new ArrayList<>();
+        Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
+        Packet packet = sendPacket(new PostPacket("uploadPost", testUser, post));
+        if (packet == null || !packet.getCommand().equals("noPictures")) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+    }
+
+    @Test
     public void uploadStoryTest() {
         System.out.println("UploadStoryTest");
         List<byte[]> bytes = new ArrayList<>();
@@ -107,6 +119,18 @@ public class DBTest {
         Story story = new Story(bytes, testUser, null, null, null);
         Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
         if (packet == null) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void uploadStoryNoPicturesTest() {
+        System.out.println("UploadStoryNoPicturesTest");
+        List<byte[]> bytes = new ArrayList<>();
+        Story story = new Story(bytes, testUser, null, null, null);
+        Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
+        if (packet == null || !packet.getCommand().equals("noPictures")) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
