@@ -101,10 +101,11 @@ public class ClientConnection implements Runnable {
                         locationLatitude);
                 insertStatement = "INSERT INTO StoryMedia(Story,StoryId) VALUES(?,?)";
                 String selectStoryId = "SELECT StoryId FROM Story WHERE GoUserId = ? AND StoryDateTime = ?";
-                long storyId = Server.DB_HANDLER.readFromDB(selectStoryId, story.getFromUser().getUserId(), story.getCreatedDate(), "1;BigInt").get(0).getLong();
+                long storyId = Server.DB_HANDLER.readFromDB(selectStoryId, story.getFromUser().getUserId(), createdTimestamp, "1;BigInt").get(0).getLong();
                 String storyUrl = generateStoryURL(storyId);
                 String updateUrlStatement = "UPDATE Story SET StoryURL = ? WHERE GoUserId = ? AND StoryDateTime = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(updateUrlStatement, storyUrl, story.getFromUser().getUserId(), createdTimestamp);
+
                 for (int i = 0; i < story.getStory().size(); i++) {
                     Server.DB_HANDLER.executeStatementsOnDB(insertStatement, story.getStory().get(i), storyId);
                 }
@@ -113,7 +114,7 @@ public class ClientConnection implements Runnable {
             }
             case DELETE_STORY -> {
                 System.out.println("deleteStory");
-                String deleteStoryMediaStatement = "DELETE FROM StoryMedia sm WHERE EXISTS (SELECT 1 FROM Story s WHERE s.StoryId = sm.StoryId AND StoryURL = ?)";
+                String deleteStoryMediaStatement = "DELETE FROM StoryMedia WHERE EXISTS (SELECT 1 FROM Story WHERE Story.StoryId = StoryMedia.StoryId AND Story.StoryURL = ?)";
                 Server.DB_HANDLER.executeStatementsOnDB(deleteStoryMediaStatement, story.getUrl());
                 String deleteStoryStatement = "DELETE FROM Story WHERE StoryURL = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(deleteStoryStatement, story.getUrl());
@@ -320,7 +321,6 @@ public class ClientConnection implements Runnable {
                 double locationLongitude = post.getLocation() == null ? 0 : post.getLocation().getLongitude();
                 double locationLatitude = post.getLocation() == null ? 0 : post.getLocation().getLatitude();
                 Timestamp createdTimestamp = Timestamp.valueOf(post.getCreatedDate());
-                System.out.println("uploadPost2");
                 Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
                         post.getFromUser().getUserId(),
                         post.getUrl(),
@@ -329,12 +329,14 @@ public class ClientConnection implements Runnable {
                         locationLatitude,
                         post.getDescription());
                 insertStatement = "INSERT INTO PostMedia(Post,PostId) VALUES(?,?)";
-                System.out.println("uploadPost3");
+
                 String selectPostId = "SELECT PostId FROM Post WHERE GoUserId = ? AND PostDateTime = ?";
-                long postId = Server.DB_HANDLER.readFromDB(selectPostId, post.getFromUser().getUserId(), post.getCreatedDate(), "1;BigInt").get(0).getLong();
+                System.out.println("Timestamp: " + createdTimestamp);
+                long postId = Server.DB_HANDLER.readFromDB(selectPostId, post.getFromUser().getUserId(), createdTimestamp, "1;BigInt").get(0).getLong();
                 String postURL = generatePostURL(postId);
                 String updateUrlStatement = "UPDATE Post SET PostURL = ? WHERE GoUserId = ? AND PostDateTime = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(updateUrlStatement, postURL, post.getFromUser().getUserId(), createdTimestamp);
+
                 for (int i = 0; i < post.getPictures().size(); i++) {
                     Server.DB_HANDLER.executeStatementsOnDB(insertStatement, post.getPictures().get(i), postId);
                 }
@@ -344,7 +346,7 @@ public class ClientConnection implements Runnable {
             }
             case DELETE_POST -> {
                 System.out.println("deletePost");
-                String deletePostMediaStatement = "DELETE FROM PostMedia pm WHERE EXISTS (SELECT 1 FROM Post s WHERE s.PostId = pm.PostId AND PostURL = ?)";
+                String deletePostMediaStatement = "DELETE FROM PostMedia WHERE EXISTS (SELECT 1 FROM Post WHERE Post.PostId = PostMedia.PostId AND Post.PostURL = ?)";
                 Server.DB_HANDLER.executeStatementsOnDB(deletePostMediaStatement, post.getUrl());
                 String deletePostStatement = "DELETE FROM Post WHERE PostURL = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(deletePostStatement, post.getUrl());
