@@ -23,7 +23,7 @@ CREATE TABLE GoUser
     GoUserPassword       VARCHAR(130) NOT NULL,
     GoUserDescription    VARCHAR(500),
     GoUserIsPrivate      BOOLEAN      NULL DEFAULT false,
-    GoUserDateTime       TIMESTAMP    NOT NULL,
+    GoUserDateTime       TIMESTAMP(5)    NOT NULL,
     GoUserProfilePicture LONGBLOB,
     CONSTRAINT GoUser_PK PRIMARY KEY (GoUserId)
 );
@@ -32,7 +32,7 @@ CREATE TABLE Post
     PostId          BIGINT       NOT NULL auto_increment,
     GoUserId        BIGINT,
     PostURL         VARCHAR(200),
-    PostDateTime    TIMESTAMP    NOT NULL,
+    PostDateTime    TIMESTAMP(5)    NOT NULL,
     Longitude       DOUBLE,
     Latitude        DOUBLE,
     PostDescription VARCHAR(500) NULL,
@@ -44,7 +44,7 @@ CREATE TABLE Story
 (
     StoryId       BIGINT    NOT NULL auto_increment,
     GoUserId      BIGINT,
-    StoryDateTime TIMESTAMP NOT NULL,
+    StoryDateTime TIMESTAMP(5) NOT NULL,
     StoryURL      VARCHAR(200),
     Longitude     DOUBLE,
     Latitude      DOUBLE,
@@ -57,7 +57,7 @@ CREATE TABLE PostComment
     CommentId       BIGINT       NOT NULL auto_increment,
     GoUserComment   Varchar(500) NOT NULL,
     PostId          BIGINT,
-    CommentDateTime TIMESTAMP    NOT NULL,
+    CommentDateTime TIMESTAMP(5)    NOT NULL,
     GoUserId        BIGINT,
     CONSTRAINT PostCommentGoUser_FK FOREIGN KEY (GoUserId)
         REFERENCES GoUser (GoUserId) ON DELETE SET NULL,

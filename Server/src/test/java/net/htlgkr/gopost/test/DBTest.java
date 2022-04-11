@@ -5,10 +5,13 @@ import net.htlgkr.gopost.data.Profile;
 import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.packet.*;
+import net.htlgkr.gopost.server.Server;
 import net.htlgkr.gopost.util.Encrypt;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -104,7 +107,7 @@ public class DBTest {
         System.out.println("DeletePostTest");
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[0]);
-        Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
+        Post post = new Post(bytes, testUser, Server.TEMPLATE_URL + "post/id=2", null, null, null, null, null, null);
         Packet packet = sendPacket(new PostPacket("uploadPost", testUser, post));
         if (packet == null) {
             Assert.fail();
@@ -147,7 +150,7 @@ public class DBTest {
         System.out.println("deleteStoryTest");
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[0]);
-        Story story = new Story(bytes, testUser, null, null, null);
+        Story story = new Story(bytes, testUser, Server.TEMPLATE_URL + "story/id=2", null, null);
         Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
         if (packet == null) {
             Assert.fail();
