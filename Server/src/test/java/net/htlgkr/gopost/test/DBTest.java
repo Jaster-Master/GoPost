@@ -100,6 +100,24 @@ public class DBTest {
     }
 
     @Test
+    public void deletePostTest() {
+        System.out.println("DeletePostTest");
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[0]);
+        Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
+        Packet packet = sendPacket(new PostPacket("uploadPost", testUser, post));
+        if (packet == null) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+        packet = sendPacket(new PostPacket("deletePost", testUser, post));
+        if (packet == null) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+    }
+
+    @Test
     public void uploadPostNoPicturesTest() {
         System.out.println("UploadPostNoPicturesTest");
         List<byte[]> bytes = new ArrayList<>();
@@ -118,6 +136,24 @@ public class DBTest {
         bytes.add(new byte[0]);
         Story story = new Story(bytes, testUser, null, null, null);
         Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
+        if (packet == null) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void deleteStoryTest() {
+        System.out.println("deleteStoryTest");
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[0]);
+        Story story = new Story(bytes, testUser, null, null, null);
+        Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
+        if (packet == null) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+        packet = sendPacket(new StoryPacket("deleteStory", testUser, story));
         if (packet == null) {
             Assert.fail();
         }
