@@ -2,11 +2,11 @@ package net.htlgkr.gopost.data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Story implements Serializable {
-    private byte[][] story;
+    private List<byte[]> story;
     private String url;
     private User fromUser;
     private LocalDateTime createdDate;
@@ -15,7 +15,7 @@ public class Story implements Serializable {
     public Story() {
     }
 
-    public Story(byte[][] story, String url, User fromUser, LocalDateTime createdDate, GoLocation location) {
+    public Story(List<byte[]> story, User fromUser, String url, LocalDateTime createdDate, GoLocation location) {
         this.story = story;
         this.url = url;
         this.fromUser = fromUser;
@@ -23,11 +23,15 @@ public class Story implements Serializable {
         this.location = location;
     }
 
-    public byte[][] getStory() {
+    public void addToStory(byte[] storyMedia) {
+        story.add(storyMedia);
+    }
+
+    public List<byte[]> getStory() {
         return story;
     }
 
-    public void setStory(byte[][] story) {
+    public void setStory(List<byte[]> story) {
         this.story = story;
     }
 
@@ -68,13 +72,11 @@ public class Story implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Story story1 = (Story) o;
-        return Arrays.equals(story, story1.story) && Objects.equals(url, story1.url) && Objects.equals(fromUser, story1.fromUser) && Objects.equals(createdDate, story1.createdDate) && Objects.equals(location, story1.location);
+        return Objects.equals(story, story1.story) && Objects.equals(url, story1.url) && Objects.equals(fromUser, story1.fromUser) && Objects.equals(createdDate, story1.createdDate) && Objects.equals(location, story1.location);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(url, fromUser, createdDate, location);
-        result = 31 * result + Arrays.hashCode(story);
-        return result;
+        return Objects.hash(story, url, fromUser, createdDate, location);
     }
 }
