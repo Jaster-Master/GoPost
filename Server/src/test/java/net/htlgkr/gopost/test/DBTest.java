@@ -114,7 +114,7 @@ public class DBTest {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
-        packet = sendPacket(new PostPacket(Command.DELETED_POST, testUser, post));
+        packet = sendPacket(new PostPacket(Command.DELETE_POST, testUser, post));
         if (packet == null) {
             Assert.fail();
         }
