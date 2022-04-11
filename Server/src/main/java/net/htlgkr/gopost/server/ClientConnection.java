@@ -110,9 +110,11 @@ public class ClientConnection implements Runnable {
                 break;
             case "deleteStory":
                 System.out.println("deleteStory");
-                String deleteStoryMediaStatement = "DELETE FROM StoryMedia WHERE StoryId = ?";
-                Server.DB_HANDLER.executeStatementsOnDB(deleteStoryMediaStatement);
-                String deleteStoryStatement = "DELETE FROM Story WHERE StoryId = ?";
+                String deleteStoryMediaStatement = "DELETE FROM StoryMedia WHERE StoryURL = ?";
+                Server.DB_HANDLER.executeStatementsOnDB(deleteStoryMediaStatement, story.getUrl());
+                String deleteStoryStatement = "DELETE FROM Story WHERE StoryURL = ?";
+                Server.DB_HANDLER.executeStatementsOnDB(deleteStoryStatement, story.getUrl());
+                sendPacket(new Packet("deletedStory", null));
                 break;
         }
     }
