@@ -5,14 +5,12 @@ import net.htlgkr.gopost.data.Profile;
 import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.packet.*;
-import net.htlgkr.gopost.util.Command;
 import net.htlgkr.gopost.server.Server;
+import net.htlgkr.gopost.util.Command;
 import net.htlgkr.gopost.util.Encrypt;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
