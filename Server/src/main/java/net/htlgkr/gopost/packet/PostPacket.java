@@ -2,6 +2,7 @@ package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.Post;
 import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.util.Command;
 
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ public class PostPacket extends Packet {
     public PostPacket() {
     }
 
-    public PostPacket(String command, User sentByUser, Post post) {
+    public PostPacket(Command command, User sentByUser, Post post) {
         super(command, sentByUser);
         this.post = post;
     }

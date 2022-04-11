@@ -5,6 +5,7 @@ import net.htlgkr.gopost.data.Profile;
 import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.packet.*;
+import net.htlgkr.gopost.util.Command;
 import net.htlgkr.gopost.util.Encrypt;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -57,7 +58,7 @@ public class DBTest {
     @Test
     public void loginTest() {
         System.out.println("LoginTest");
-        Packet packet = sendPacket(new LoginPacket("firstTimeLogin", testUser, testUser.getProfileName(), testUser.getUserName(), testUser.getEmail(), testUser.getPassword()));
+        Packet packet = sendPacket(new LoginPacket(Command.FIRST_TIME_LOGIN, testUser, testUser.getProfileName(), testUser.getUserName(), testUser.getEmail(), testUser.getPassword()));
         if (packet == null) {
             Assert.fail();
         }
@@ -67,8 +68,8 @@ public class DBTest {
     @Test
     public void loginAlreadyExistsTest() {
         System.out.println("LoginAlreadyExistsTest");
-        Packet packet = sendPacket(new LoginPacket("firstTimeLogin", testUser, testUser.getProfileName(), testUser.getUserName(), testUser.getEmail(), testUser.getPassword()));
-        if (packet == null || !packet.getCommand().equals("userAlreadyExists")) {
+        Packet packet = sendPacket(new LoginPacket(Command.FIRST_TIME_LOGIN, testUser, testUser.getProfileName(), testUser.getUserName(), testUser.getEmail(), testUser.getPassword()));
+        if (packet == null || !packet.getCommand().equals(Command.USER_ALREADY_EXISTS)) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
@@ -79,7 +80,7 @@ public class DBTest {
         System.out.println("RequestProfileTest");
         Profile profile = new Profile();
         profile.setUserId(testUser.getUserId());
-        Packet packet = sendPacket(new ProfilePacket("requestProfile", testUser, profile));
+        Packet packet = sendPacket(new ProfilePacket(Command.REQUEST_PROFILE, testUser, profile));
         if (packet == null) {
             Assert.fail();
         }
@@ -92,7 +93,7 @@ public class DBTest {
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[0]);
         Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
-        Packet packet = sendPacket(new PostPacket("uploadPost", testUser, post));
+        Packet packet = sendPacket(new PostPacket(Command.UPLOAD_POST, testUser, post));
         if (packet == null) {
             Assert.fail();
         }
@@ -105,12 +106,12 @@ public class DBTest {
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[0]);
         Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
-        Packet packet = sendPacket(new PostPacket("uploadPost", testUser, post));
+        Packet packet = sendPacket(new PostPacket(Command.UPLOAD_POST, testUser, post));
         if (packet == null) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
-        packet = sendPacket(new PostPacket("deletePost", testUser, post));
+        packet = sendPacket(new PostPacket(Command.DELETED_POST, testUser, post));
         if (packet == null) {
             Assert.fail();
         }
@@ -122,8 +123,8 @@ public class DBTest {
         System.out.println("UploadPostNoPicturesTest");
         List<byte[]> bytes = new ArrayList<>();
         Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
-        Packet packet = sendPacket(new PostPacket("uploadPost", testUser, post));
-        if (packet == null || !packet.getCommand().equals("noPictures")) {
+        Packet packet = sendPacket(new PostPacket(Command.UPLOAD_POST, testUser, post));
+        if (packet == null || !packet.getCommand().equals(Command.NO_PICTURES)) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
@@ -135,7 +136,7 @@ public class DBTest {
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[0]);
         Story story = new Story(bytes, testUser, null, null, null);
-        Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
+        Packet packet = sendPacket(new StoryPacket(Command.UPLOAD_STORY, testUser, story));
         if (packet == null) {
             Assert.fail();
         }
@@ -148,12 +149,12 @@ public class DBTest {
         List<byte[]> bytes = new ArrayList<>();
         bytes.add(new byte[0]);
         Story story = new Story(bytes, testUser, null, null, null);
-        Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
+        Packet packet = sendPacket(new StoryPacket(Command.UPLOAD_STORY, testUser, story));
         if (packet == null) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
-        packet = sendPacket(new StoryPacket("deleteStory", testUser, story));
+        packet = sendPacket(new StoryPacket(Command.DELETE_STORY, testUser, story));
         if (packet == null) {
             Assert.fail();
         }
@@ -165,8 +166,8 @@ public class DBTest {
         System.out.println("UploadStoryNoPicturesTest");
         List<byte[]> bytes = new ArrayList<>();
         Story story = new Story(bytes, testUser, null, null, null);
-        Packet packet = sendPacket(new StoryPacket("uploadStory", testUser, story));
-        if (packet == null || !packet.getCommand().equals("noPictures")) {
+        Packet packet = sendPacket(new StoryPacket(Command.UPLOAD_STORY, testUser, story));
+        if (packet == null || !packet.getCommand().equals(Command.NO_PICTURES)) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
@@ -177,7 +178,7 @@ public class DBTest {
         System.out.println("RequestProfilePostsCountTest");
         Profile profile = new Profile();
         profile.setUserId(testUser.getUserId());
-        Packet packet = sendPacket(new ProfilePacket("requestProfile", testUser, profile));
+        Packet packet = sendPacket(new ProfilePacket(Command.REQUEST_PROFILE, testUser, profile));
         if (packet == null) {
             Assert.fail();
         }
@@ -192,7 +193,7 @@ public class DBTest {
         System.out.println("RequestProfileStoriesCountTest");
         Profile profile = new Profile();
         profile.setUserId(testUser.getUserId());
-        Packet packet = sendPacket(new ProfilePacket("requestProfile", testUser, profile));
+        Packet packet = sendPacket(new ProfilePacket(Command.REQUEST_PROFILE, testUser, profile));
         if (packet == null) {
             Assert.fail();
         }
@@ -205,8 +206,8 @@ public class DBTest {
     @Test
     public void reportUserTest() {
         System.out.println("ReportUserTest");
-        Packet packet = sendPacket(new ReportPacket("addReport", testUser, "jaster", "bullying"));
-        if (packet == null || !packet.getCommand().equals("reported")) {
+        Packet packet = sendPacket(new ReportPacket(Command.ADD_REPORT, testUser, "jaster", "bullying"));
+        if (packet == null || !packet.getCommand().equals(Command.REPORTED)) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
@@ -215,8 +216,8 @@ public class DBTest {
     @Test
     public void blockUserTest() {
         System.out.println("BlockUserTest");
-        Packet packet = sendPacket(new UserPacket("addBlock", testUser, "jaster"));
-        if (packet == null || !packet.getCommand().equals("blocked")) {
+        Packet packet = sendPacket(new UserPacket(Command.ADD_BLOCK, testUser, "jaster"));
+        if (packet == null || !packet.getCommand().equals(Command.BLOCKED)) {
             Assert.fail();
         }
         System.out.println(packet.getCommand());

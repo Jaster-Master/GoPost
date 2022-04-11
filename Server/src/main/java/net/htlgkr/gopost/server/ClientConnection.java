@@ -3,6 +3,7 @@ package net.htlgkr.gopost.server;
 import net.htlgkr.gopost.data.*;
 import net.htlgkr.gopost.database.DBObject;
 import net.htlgkr.gopost.packet.*;
+import net.htlgkr.gopost.util.Command;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -78,13 +79,13 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handleStoryPacket(StoryPacket storyPacket) {
-        String command = storyPacket.getCommand();
+        Command command = storyPacket.getCommand();
         Story story = storyPacket.getStory();
         switch (command) {
-            case "uploadStory" -> {
+            case UPLOAD_STORY -> {
                 System.out.println("uploadStory");
                 if (story.getStory() == null || story.getStory().size() <= 0) {
-                    sendPacket(new Packet("noPictures", null));
+                    sendPacket(new Packet(Command.NO_PICTURES, null));
                     return;
                 }
                 story.setCreatedDate(LocalDateTime.now());
@@ -107,34 +108,34 @@ public class ClientConnection implements Runnable {
                 for (int i = 0; i < story.getStory().size(); i++) {
                     Server.DB_HANDLER.executeStatementsOnDB(insertStatement, story.getStory().get(i), storyId);
                 }
-                sendPacket(new Packet("answer", null));
+                sendPacket(new Packet(Command.ANSWER, null));
                 System.out.println("uploadStory-Packet sent");
             }
-            case "deleteStory" -> {
+            case DELETE_STORY -> {
                 System.out.println("deleteStory");
                 String deleteStoryMediaStatement = "DELETE FROM StoryMedia sm WHERE EXISTS (SELECT 1 FROM Story s WHERE s.StoryId = sm.StoryId AND StoryURL = ?)";
                 Server.DB_HANDLER.executeStatementsOnDB(deleteStoryMediaStatement, story.getUrl());
                 String deleteStoryStatement = "DELETE FROM Story WHERE StoryURL = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(deleteStoryStatement, story.getUrl());
-                sendPacket(new Packet("deletedStory", null));
+                sendPacket(new Packet(Command.DELETED_STORY, null));
             }
         }
     }
 
     private synchronized void handleReportPacket(ReportPacket reportPacket) {
-        String command = reportPacket.getCommand();
-        if ("addReport".equals(command)) {
+        Command command = reportPacket.getCommand();
+        if (Command.ADD_REPORT.equals(command)) {
             System.out.println("addReport");
             User reportedUser = Server.DB_HANDLER.getUserFromName(reportPacket.getUserName());
             String insertStatement = "INSERT INTO ReportedGoUser(Reported,Reporter,Reason) VALUES(?,?,?)";
             Server.DB_HANDLER.executeStatementsOnDB(insertStatement, reportPacket.getSentByUser().getUserId(), reportedUser.getUserId(), reportPacket.getReason());
-            sendPacket(new Packet("reported", null));
+            sendPacket(new Packet(Command.REPORTED, null));
         }
     }
 
     private synchronized void handleProfilePacket(ProfilePacket profilePacket) {
-        String command = profilePacket.getCommand();
-        if ("requestProfile".equals(command)) {
+        Command command = profilePacket.getCommand();
+        if (Command.REQUEST_PROFILE.equals(command)) {
             System.out.println("requestProfile");
             long userId = profilePacket.getProfile().getUserId();
             String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserDescription, GoUserIsPrivate, GoUserDateTime, GoUserProfilePicture FROM GoUser WHERE GoUserId = ?";
@@ -158,7 +159,7 @@ public class ClientConnection implements Runnable {
             Profile requestedProfile = new Profile(userId, userName, profileName, email, password, description, isPrivate,
                     createdDate, profilePicture, posts, stories, savedPosts, friends, followers, followed);
 
-            sendPacket(new ProfilePacket("answer", null, requestedProfile));
+            sendPacket(new ProfilePacket(Command.ANSWER, null, requestedProfile));
         }
     }
 
@@ -305,13 +306,13 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handlePostPacket(PostPacket postPacket) {
-        String command = postPacket.getCommand();
+        Command command = postPacket.getCommand();
         Post post = postPacket.getPost();
         switch (command) {
-            case "uploadPost" -> {
+            case UPLOAD_POST-> {
                 System.out.println("uploadPost");
                 if (post.getPictures() == null || post.getPictures().size() <= 0) {
-                    sendPacket(new Packet("noPictures", null));
+                    sendPacket(new Packet(Command.NO_PICTURES, null));
                     return;
                 }
                 post.setCreatedDate(LocalDateTime.now());
@@ -338,16 +339,16 @@ public class ClientConnection implements Runnable {
                     Server.DB_HANDLER.executeStatementsOnDB(insertStatement, post.getPictures().get(i), postId);
                 }
                 System.out.println("requestPost4");
-                sendPacket(new Packet("answer", null));
+                sendPacket(new Packet(Command.ANSWER, null));
                 System.out.println("uploadPost-Packet sent");
             }
-            case "deletePost" -> {
+            case DELETE_POST -> {
                 System.out.println("deletePost");
                 String deletePostMediaStatement = "DELETE FROM PostMedia pm WHERE EXISTS (SELECT 1 FROM Post s WHERE s.PostId = pm.PostId AND PostURL = ?)";
                 Server.DB_HANDLER.executeStatementsOnDB(deletePostMediaStatement, post.getUrl());
                 String deletePostStatement = "DELETE FROM Post WHERE PostURL = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(deletePostStatement, post.getUrl());
-                sendPacket(new Packet("deletedPost", null));
+                sendPacket(new Packet(Command.DELETED_POST, null));
             }
         }
     }
@@ -361,12 +362,12 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handleLoginPacket(LoginPacket loginPacket) {
-        String command = loginPacket.getCommand();
+        Command command = loginPacket.getCommand();
         switch (command) {
-            case "firstTimeLogin":
+            case FIRST_TIME_LOGIN:
                 System.out.println("FirstTimeLogin");
                 if (isUserNameAlreadyExisting(loginPacket.getUserName())) {
-                    sendPacket(new Packet("userAlreadyExists", null));
+                    sendPacket(new Packet(Command.USER_ALREADY_EXISTS, null));
                     return;
                 }
                 String insertStatement = "INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)";
@@ -377,7 +378,7 @@ public class ClientConnection implements Runnable {
                         loginPacket.getPassword(),
                         false,
                         Timestamp.valueOf(LocalDateTime.now()));
-            case "checkIfCorrectPassword":
+            case CHECK_PASSWORD:
                 System.out.println("checkIfCorrectPassword");
                 String selectStatement = "SELECT GoUserId, GoUserProfilePicture FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
                 List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;Blob");
@@ -385,7 +386,7 @@ public class ClientConnection implements Runnable {
                 Server.addClient(this);
 
                 User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), result.get(1).getBlob());
-                sendPacket(new Packet("answer", user));
+                sendPacket(new Packet(Command.ANSWER, user));
         }
     }
 
@@ -401,13 +402,13 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handleBlockPacket(UserPacket userPacket) {
-        String command = userPacket.getCommand();
-        if ("addBlock".equals(command)) {
+        Command command = userPacket.getCommand();
+        if (Command.ADD_BLOCK.equals(command)) {
             System.out.println("addBlock");
             User blockedUser = Server.DB_HANDLER.getUserFromName(userPacket.getUserName());
             String insertStatement = "INSERT INTO BlockedGoUser(Blocker,Blocked) VALUES(?,?)";
             Server.DB_HANDLER.executeStatementsOnDB(insertStatement, userPacket.getSentByUser().getUserId(), blockedUser.getUserId());
-            sendPacket(new Packet("blocked", null));
+            sendPacket(new Packet(Command.BLOCKED, null));
         }
     }
 

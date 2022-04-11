@@ -2,6 +2,7 @@ package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.util.Command;
 
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ public class StoryPacket extends Packet {
     public StoryPacket() {
     }
 
-    public StoryPacket(String command, User sentByUser, Story story) {
+    public StoryPacket(Command command, User sentByUser, Story story) {
         super(command, sentByUser);
         this.story = story;
     }
