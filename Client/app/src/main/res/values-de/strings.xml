@@ -16,4 +16,8 @@
     <string name="fullname_wilfingseder">Lukas Wilfingseder</string>
     <string name="fullnames_wilfingseder_kammerer">Lukas Wilfingseder, Max Kammerer,</string>
     <string name="fullnames_zecher_gschwendtner">Julian Zecher, Jakob Gschwendtner</string>
+    <string name="create_post">Beitrag erstellen</string>
+    <string name="create_story">Story erstellen</string>
+    <string name="activity_feed">Aktivitätsfeed</string>
+    <string name="activity_feed">A</string>
 </resources>
