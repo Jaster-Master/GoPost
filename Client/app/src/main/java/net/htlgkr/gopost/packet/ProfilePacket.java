@@ -1,7 +1,10 @@
 package net.htlgkr.gopost.packet;
 
+import net.htlgkr.gopost.data.Post;
 import net.htlgkr.gopost.data.Profile;
+import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.util.Command;
 
 import java.util.Objects;
 
@@ -11,7 +14,7 @@ public class ProfilePacket extends Packet {
     public ProfilePacket() {
     }
 
-    public ProfilePacket(String command, User sentByUser, Profile profile) {
+    public ProfilePacket(Command command, User sentByUser, Profile profile) {
         super(command, sentByUser);
         this.profile = profile;
     }

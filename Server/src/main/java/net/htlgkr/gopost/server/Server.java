@@ -14,13 +14,14 @@ import java.util.Map;
 
 public class Server {
 
-    private static final Map<Long, ClientConnection> CLIENTS = new HashMap<>();
-    private ServerSocket serverSocket;
-    private static final int PORT = 16663;
-    private ObservableValue<Boolean> isRunning;
+    public static final Map<Long, ClientConnection> CLIENTS = new HashMap<>();
+    public static ServerSocket serverSocket;
+    public static final int PORT = 16663;
+    public static ObservableValue<Boolean> isRunning;
     public static final DBHandler DB_HANDLER = new DBHandler();
+    public static final String TEMPLATE_URL = "https://gopost.zeige.info/";
 
-    public void startServer(String[] args) {
+    public static void startServer(String[] args) {
         isRunning = new ObservableValue<>(true);
         PrintWriter writer = null;
         try {
@@ -32,8 +33,10 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            writer.println(LocalDateTime.now() + " ; Server stopped");
-            writer.close();
+            if (writer != null) {
+                writer.println(LocalDateTime.now() + " ; Server stopped");
+                writer.close();
+            }
             try {
                 serverSocket.close();
             } catch (IOException e) {
@@ -42,13 +45,13 @@ public class Server {
         }
     }
 
-    private void waitForClientConnection(PrintWriter writer) {
+    private static void waitForClientConnection(PrintWriter writer) {
         while (isRunning.getValue()) {
             try {
                 Socket clientSocket = serverSocket.accept();
                 writer.println(LocalDateTime.now() + " ; Client connected");
                 System.out.println(LocalDateTime.now() + " ; Client connected");
-                ClientConnection clientConnection = new ClientConnection(this, clientSocket);
+                ClientConnection clientConnection = new ClientConnection(clientSocket);
                 new Thread(clientConnection).start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,11 +59,11 @@ public class Server {
         }
     }
 
-    public void addClient(ClientConnection connection) {
+    public static void addClient(ClientConnection connection) {
         CLIENTS.put(connection.getUserId(), connection);
     }
 
-    public void closeServer() {
+    public static void closeServer() {
         isRunning.setValue(false);
     }
 }

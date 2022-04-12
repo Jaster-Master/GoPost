@@ -1,6 +1,7 @@
 package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.util.Command;
 
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ public class UserPacket extends Packet {
     public UserPacket() {
     }
 
-    public UserPacket(String command, User sentByUser, String userName) {
+    public UserPacket(Command command, User sentByUser, String userName) {
         super(command, sentByUser);
         this.userName = userName;
     }

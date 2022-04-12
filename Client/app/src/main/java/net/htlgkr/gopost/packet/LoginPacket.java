@@ -1,7 +1,7 @@
 package net.htlgkr.gopost.packet;
 
 import net.htlgkr.gopost.data.User;
-import net.htlgkr.gopost.util.Encrypt;
+import net.htlgkr.gopost.util.Command;
 
 import java.util.Objects;
 
@@ -15,12 +15,12 @@ public class LoginPacket extends Packet {
     public LoginPacket() {
     }
 
-    public LoginPacket(String command, User sentByUser, String profileName, String userName, String email, String password) {
+    public LoginPacket(Command command, User sentByUser, String profileName, String userName, String email, String password) {
         super(command, sentByUser);
         this.profileName = profileName;
         this.userName = userName;
         this.email = email;
-        this.password = Encrypt.SHA512(password);
+        this.password = password;
     }
 
     public String getProfileName() {

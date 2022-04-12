@@ -3,6 +3,7 @@ package net.htlgkr.gopost.server;
 import net.htlgkr.gopost.data.*;
 import net.htlgkr.gopost.database.DBObject;
 import net.htlgkr.gopost.packet.*;
+import net.htlgkr.gopost.util.Command;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.util.List;
 
 public class ClientConnection implements Runnable {
 
-    private final Server server;
     private final Socket clientSocket;
     private ObjectOutputStream writer;
     private ObjectInputStream reader;
@@ -31,8 +31,7 @@ public class ClientConnection implements Runnable {
         this.userId = userId;
     }
 
-    public ClientConnection(Server server, Socket clientSocket) {
-        this.server = server;
+    public ClientConnection(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
             this.writer = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -80,49 +79,64 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handleStoryPacket(StoryPacket storyPacket) {
-        String command = storyPacket.getCommand();
+        Command command = storyPacket.getCommand();
         Story story = storyPacket.getStory();
-        story.setCreatedDate(LocalDateTime.now());
-        if ("uploadStory".equals(command)) {
-            System.out.println("uploadStory");
-            if (story.getStory() == null || story.getStory().size() <= 0) {
-                sendPacket(new Packet("noPictures", null));
-                return;
-            }
-            String insertStatement = "INSERT INTO Story(GoUserId,StoryDateTime,StoryURL,Longitude,Latitude) VALUES(?,?,?,?,?)";
-            double locationLongitude = story.getLocation() == null ? 0 : story.getLocation().getLongitude();
-            double locationLatitude = story.getLocation() == null ? 0 : story.getLocation().getLatitude();
-            Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
-                    story.getFromUser().getUserId(),
-                    Timestamp.valueOf(story.getCreatedDate()),
-                    story.getUrl(),
-                    locationLongitude,
-                    locationLatitude);
-            insertStatement = "INSERT INTO StoryMedia(Story,StoryId) VALUES(?,?)";
-            for (int i = 0; i < story.getStory().size(); i++) {
+        switch (command) {
+            case UPLOAD_STORY -> {
+                System.out.println("uploadStory");
+                if (story.getStory() == null || story.getStory().size() <= 0) {
+                    sendPacket(new Packet(Command.NO_PICTURES, null));
+                    return;
+                }
+                story.setCreatedDate(LocalDateTime.now());
+                String insertStatement = "INSERT INTO Story(GoUserId,StoryDateTime,StoryURL,Longitude,Latitude) VALUES(?,?,?,?,?)";
+                double locationLongitude = story.getLocation() == null ? 0 : story.getLocation().getLongitude();
+                double locationLatitude = story.getLocation() == null ? 0 : story.getLocation().getLatitude();
+                Timestamp createdTimestamp = Timestamp.valueOf(story.getCreatedDate());
+                Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
+                        story.getFromUser().getUserId(),
+                        createdTimestamp,
+                        story.getUrl(),
+                        locationLongitude,
+                        locationLatitude);
+                insertStatement = "INSERT INTO StoryMedia(Story,StoryId) VALUES(?,?)";
                 String selectStoryId = "SELECT StoryId FROM Story WHERE GoUserId = ? AND StoryDateTime = ?";
-                long storyId = Server.DB_HANDLER.readFromDB(selectStoryId, story.getFromUser().getUserId(), story.getCreatedDate(), "1;BigInt").get(0).getLong();
-                Server.DB_HANDLER.executeStatementsOnDB(insertStatement, story.getStory().get(i), storyId);
+                long storyId = Server.DB_HANDLER.readFromDB(selectStoryId, story.getFromUser().getUserId(), createdTimestamp, "1;BigInt").get(0).getLong();
+                String storyUrl = generateStoryURL(storyId);
+                String updateUrlStatement = "UPDATE Story SET StoryURL = ? WHERE GoUserId = ? AND StoryDateTime = ?";
+                Server.DB_HANDLER.executeStatementsOnDB(updateUrlStatement, storyUrl, story.getFromUser().getUserId(), createdTimestamp);
+
+                for (int i = 0; i < story.getStory().size(); i++) {
+                    Server.DB_HANDLER.executeStatementsOnDB(insertStatement, story.getStory().get(i), storyId);
+                }
+                sendPacket(new Packet(Command.ANSWER, null));
+                System.out.println("uploadStory-Packet sent");
             }
-            sendPacket(new Packet("answer", null));
-            System.out.println("uploadStory-Packet sent");
+            case DELETE_STORY -> {
+                System.out.println("deleteStory");
+                String deleteStoryMediaStatement = "DELETE FROM StoryMedia WHERE EXISTS (SELECT 1 FROM Story WHERE Story.StoryId = StoryMedia.StoryId AND Story.StoryURL = ?)";
+                Server.DB_HANDLER.executeStatementsOnDB(deleteStoryMediaStatement, story.getUrl());
+                String deleteStoryStatement = "DELETE FROM Story WHERE StoryURL = ?";
+                Server.DB_HANDLER.executeStatementsOnDB(deleteStoryStatement, story.getUrl());
+                sendPacket(new Packet(Command.DELETED_STORY, null));
+            }
         }
     }
 
     private synchronized void handleReportPacket(ReportPacket reportPacket) {
-        String command = reportPacket.getCommand();
-        if ("addReport".equals(command)) {
+        Command command = reportPacket.getCommand();
+        if (Command.ADD_REPORT.equals(command)) {
             System.out.println("addReport");
             User reportedUser = Server.DB_HANDLER.getUserFromName(reportPacket.getUserName());
             String insertStatement = "INSERT INTO ReportedGoUser(Reported,Reporter,Reason) VALUES(?,?,?)";
             Server.DB_HANDLER.executeStatementsOnDB(insertStatement, reportPacket.getSentByUser().getUserId(), reportedUser.getUserId(), reportPacket.getReason());
-            sendPacket(new Packet("reported", null));
+            sendPacket(new Packet(Command.REPORTED, null));
         }
     }
 
     private synchronized void handleProfilePacket(ProfilePacket profilePacket) {
-        String command = profilePacket.getCommand();
-        if ("requestProfile".equals(command)) {
+        Command command = profilePacket.getCommand();
+        if (Command.REQUEST_PROFILE.equals(command)) {
             System.out.println("requestProfile");
             long userId = profilePacket.getProfile().getUserId();
             String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserDescription, GoUserIsPrivate, GoUserDateTime, GoUserProfilePicture FROM GoUser WHERE GoUserId = ?";
@@ -146,7 +160,7 @@ public class ClientConnection implements Runnable {
             Profile requestedProfile = new Profile(userId, userName, profileName, email, password, description, isPrivate,
                     createdDate, profilePicture, posts, stories, savedPosts, friends, followers, followed);
 
-            sendPacket(new ProfilePacket("answer", null, requestedProfile));
+            sendPacket(new ProfilePacket(Command.ANSWER, null, requestedProfile));
         }
     }
 
@@ -293,46 +307,69 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handlePostPacket(PostPacket postPacket) {
-        String command = postPacket.getCommand();
+        Command command = postPacket.getCommand();
         Post post = postPacket.getPost();
-        post.setCreatedDate(LocalDateTime.now());
-        if ("uploadPost".equals(command)) {
-            System.out.println("uploadPost");
-            if (post.getPictures() == null || post.getPictures().size() <= 0) {
-                sendPacket(new Packet("noPictures", null));
-                return;
-            }
-            String insertStatement = "INSERT INTO Post(GoUserId,PostURL,PostDateTime,Longitude,Latitude,PostDescription) VALUES(?,?,?,?,?,?)";
-            double locationLongitude = post.getLocation() == null ? 0 : post.getLocation().getLongitude();
-            double locationLatitude = post.getLocation() == null ? 0 : post.getLocation().getLatitude();
-            System.out.println("uploadPost2");
-            Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
-                    post.getFromUser().getUserId(),
-                    post.getUrl(),
-                    Timestamp.valueOf(post.getCreatedDate()),
-                    locationLongitude,
-                    locationLatitude,
-                    post.getDescription());
-            insertStatement = "INSERT INTO PostMedia(Post,PostId) VALUES(?,?)";
-            System.out.println("uploadPost3");
-            for (int i = 0; i < post.getPictures().size(); i++) {
+        switch (command) {
+            case UPLOAD_POST-> {
+                System.out.println("uploadPost");
+                if (post.getPictures() == null || post.getPictures().size() <= 0) {
+                    sendPacket(new Packet(Command.NO_PICTURES, null));
+                    return;
+                }
+                post.setCreatedDate(LocalDateTime.now());
+                String insertStatement = "INSERT INTO Post(GoUserId,PostURL,PostDateTime,Longitude,Latitude,PostDescription) VALUES(?,?,?,?,?,?)";
+                double locationLongitude = post.getLocation() == null ? 0 : post.getLocation().getLongitude();
+                double locationLatitude = post.getLocation() == null ? 0 : post.getLocation().getLatitude();
+                Timestamp createdTimestamp = Timestamp.valueOf(post.getCreatedDate());
+                Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
+                        post.getFromUser().getUserId(),
+                        post.getUrl(),
+                        createdTimestamp,
+                        locationLongitude,
+                        locationLatitude,
+                        post.getDescription());
+                insertStatement = "INSERT INTO PostMedia(Post,PostId) VALUES(?,?)";
+
                 String selectPostId = "SELECT PostId FROM Post WHERE GoUserId = ? AND PostDateTime = ?";
-                long postId = Server.DB_HANDLER.readFromDB(selectPostId, post.getFromUser().getUserId(), post.getCreatedDate(), "1;BigInt").get(0).getLong();
-                Server.DB_HANDLER.executeStatementsOnDB(insertStatement, post.getPictures().get(i), postId);
+                System.out.println("Timestamp: " + createdTimestamp);
+                long postId = Server.DB_HANDLER.readFromDB(selectPostId, post.getFromUser().getUserId(), createdTimestamp, "1;BigInt").get(0).getLong();
+                String postURL = generatePostURL(postId);
+                String updateUrlStatement = "UPDATE Post SET PostURL = ? WHERE GoUserId = ? AND PostDateTime = ?";
+                Server.DB_HANDLER.executeStatementsOnDB(updateUrlStatement, postURL, post.getFromUser().getUserId(), createdTimestamp);
+
+                for (int i = 0; i < post.getPictures().size(); i++) {
+                    Server.DB_HANDLER.executeStatementsOnDB(insertStatement, post.getPictures().get(i), postId);
+                }
+                System.out.println("requestPost4");
+                sendPacket(new Packet(Command.ANSWER, null));
+                System.out.println("uploadPost-Packet sent");
             }
-            System.out.println("requestPost4");
-            sendPacket(new Packet("answer", null));
-            System.out.println("uploadPost-Packet sent");
+            case DELETE_POST -> {
+                System.out.println("deletePost");
+                String deletePostMediaStatement = "DELETE FROM PostMedia WHERE EXISTS (SELECT 1 FROM Post WHERE Post.PostId = PostMedia.PostId AND Post.PostURL = ?)";
+                Server.DB_HANDLER.executeStatementsOnDB(deletePostMediaStatement, post.getUrl());
+                String deletePostStatement = "DELETE FROM Post WHERE PostURL = ?";
+                Server.DB_HANDLER.executeStatementsOnDB(deletePostStatement, post.getUrl());
+                sendPacket(new Packet(Command.DELETED_POST, null));
+            }
         }
     }
 
+    private synchronized String generatePostURL(long postId){
+        return Server.TEMPLATE_URL + "post/id=" + postId;
+    }
+
+    private synchronized String generateStoryURL(long storyId){
+        return Server.TEMPLATE_URL + "story/id=" + storyId;
+    }
+
     private synchronized void handleLoginPacket(LoginPacket loginPacket) {
-        String command = loginPacket.getCommand();
+        Command command = loginPacket.getCommand();
         switch (command) {
-            case "firstTimeLogin":
+            case FIRST_TIME_LOGIN:
                 System.out.println("FirstTimeLogin");
                 if (isUserNameAlreadyExisting(loginPacket.getUserName())) {
-                    sendPacket(new Packet("userAlreadyExists", null));
+                    sendPacket(new Packet(Command.USER_ALREADY_EXISTS, null));
                     return;
                 }
                 String insertStatement = "INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)";
@@ -343,15 +380,15 @@ public class ClientConnection implements Runnable {
                         loginPacket.getPassword(),
                         false,
                         Timestamp.valueOf(LocalDateTime.now()));
-            case "checkIfCorrectPassword":
+            case CHECK_PASSWORD:
                 System.out.println("checkIfCorrectPassword");
                 String selectStatement = "SELECT GoUserId, GoUserProfilePicture FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
                 List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;Blob");
                 setUserId(result.get(0).getLong());
-                server.addClient(this);
+                Server.addClient(this);
 
                 User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), result.get(1).getBlob());
-                sendPacket(new Packet("answer", user));
+                sendPacket(new Packet(Command.ANSWER, user));
         }
     }
 
@@ -367,13 +404,13 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized void handleBlockPacket(UserPacket userPacket) {
-        String command = userPacket.getCommand();
-        if ("addBlock".equals(command)) {
+        Command command = userPacket.getCommand();
+        if (Command.ADD_BLOCK.equals(command)) {
             System.out.println("addBlock");
             User blockedUser = Server.DB_HANDLER.getUserFromName(userPacket.getUserName());
             String insertStatement = "INSERT INTO BlockedGoUser(Blocker,Blocked) VALUES(?,?)";
             Server.DB_HANDLER.executeStatementsOnDB(insertStatement, userPacket.getSentByUser().getUserId(), blockedUser.getUserId());
-            sendPacket(new Packet("blocked", null));
+            sendPacket(new Packet(Command.BLOCKED, null));
         }
     }
 

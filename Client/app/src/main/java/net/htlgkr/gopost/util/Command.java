@@ -1,0 +1,20 @@
+package net.htlgkr.gopost.util;
+
+public enum Command {
+    ANSWER,
+    DELETED_POST,
+    BLOCKED,
+    NO_PICTURES,
+    USER_ALREADY_EXISTS,
+    REPORTED,
+    DELETED_STORY,
+    UPLOAD_STORY,
+    DELETE_STORY,
+    ADD_REPORT,
+    REQUEST_PROFILE,
+    ADD_BLOCK,
+    CHECK_PASSWORD,
+    FIRST_TIME_LOGIN,
+    DELETE_POST,
+    UPLOAD_POST
+}
