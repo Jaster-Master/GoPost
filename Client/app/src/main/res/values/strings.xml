@@ -18,5 +18,10 @@
     <string name="create_post">Create Post</string>
     <string name="create_story">Create Story</string>
     <string name="activity_feed">Activity-feed</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Register</string>
+    <string name="no_account">Don\'t have an account?</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

@@ -9,4 +9,8 @@
         android:id="@+id/menuItemCreateStory"
         android:icon="@drawable/ic_baseline_add_story_20"
         android:title="@string/create_story" />
+    <item
+        android:id="@+id/menuItemFeed"
+        android:icon="@drawable/ic_baseline_feed_20"
+        android:title="@string/activity_feed" />
 </menu>

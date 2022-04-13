@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 public class MainFragment extends Fragment {
 
     private MainFragmentListener listener;
+
     private ImageView imageViewIcon;
     private ImageView imageViewMenu;
     private TextView textViewGoPost;

@@ -29,12 +29,12 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
         instance = this;
         tag = instance.getClass().getSimpleName();
         setTheme(savedInstanceState);
-        setContentView(R.layout.template_main); //TODO: Change from template to actual xml
+        setContentView(R.layout.activity_login); //TODO: Change from template to actual xml
 
         homeFragment = new HomeFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.homeFragmentContainer, homeFragment).commit();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.homeFragmentContainer, homeFragment).commit();
         mainFragment = new MainFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainFragmentContainer, mainFragment).commit();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.mainFragmentContainer, mainFragment).commit();
     }
 
     private void setTheme(Bundle savedInstanceState) {

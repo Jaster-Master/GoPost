@@ -18,6 +18,11 @@
     <string name="fullnames_zecher_gschwendtner">Julian Zecher, Jakob Gschwendtner</string>
     <string name="create_post">Beitrag erstellen</string>
     <string name="create_story">Story erstellen</string>
-    <string name="activity_feed">Aktivitätsfeed</string>
-    <string name="activity_feed">A</string>
+    <string name="activity_feed">Aktivitäts-feed</string>
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="sign_in">Anmelden</string>
+    <string name="sign_up">Registrieren</string>
+    <string name="no_account">Haben Sie noch kein Konto?</string>
+
 </resources>
