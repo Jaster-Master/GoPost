@@ -29,7 +29,7 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
         instance = this;
         tag = instance.getClass().getSimpleName();
         setTheme(savedInstanceState);
-        setContentView(R.layout.activity_login); //TODO: Change from template to actual xml
+        setContentView(R.layout.activity_register); //TODO: Change from template to actual xml
 
         homeFragment = new HomeFragment();
         //getSupportFragmentManager().beginTransaction().replace(R.id.homeFragmentContainer, homeFragment).commit();

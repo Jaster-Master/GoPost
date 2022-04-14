@@ -18,10 +18,15 @@
     <string name="create_post">Create Post</string>
     <string name="create_story">Create Story</string>
     <string name="activity_feed">Activity-feed</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Register</string>
     <string name="no_account">Don\'t have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="profilename">Profilename:</string>
+    <string name="unique_name">Unique name</string>
+    <string name="display_name">Displayname</string>
+    <string name="email">Email:</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

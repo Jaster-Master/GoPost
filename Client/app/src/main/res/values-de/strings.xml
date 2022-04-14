@@ -19,10 +19,14 @@
     <string name="create_post">Beitrag erstellen</string>
     <string name="create_story">Story erstellen</string>
     <string name="activity_feed">Aktivitäts-feed</string>
-    <string name="username">Benutzername</string>
-    <string name="password">Passwort</string>
+    <string name="username">Benutzername:</string>
+    <string name="password">Passwort:</string>
     <string name="sign_in">Anmelden</string>
     <string name="sign_up">Registrieren</string>
     <string name="no_account">Haben Sie noch kein Konto?</string>
-
+    <string name="already_have_account">Haben Sie bereits ein Konto?</string>
+    <string name="profilename">Profilname:</string>
+    <string name="unique_name">Einzigartiger Name</string>
+    <string name="display_name">Anzeigename</string>
+    <string name="email">Email</string>
 </resources>
