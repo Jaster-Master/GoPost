@@ -1,5 +1,5 @@
 package net.htlgkr.gopost.fragments;
 
 public interface HomeFragmentListener {
-    void onInputSent(String input);
+    void onInputHomeSent(String input);
 }

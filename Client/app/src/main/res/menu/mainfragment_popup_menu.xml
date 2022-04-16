@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuItemCreatePost"
+        android:icon="@drawable/ic_baseline_add_post_20"
+        android:title="@string/create_post" />
+    <item
+        android:id="@+id/menuItemCreateStory"
+        android:icon="@drawable/ic_baseline_add_story_20"
+        android:title="@string/create_story" />
+    <item
+        android:id="@+id/menuItemFeed"
+        android:icon="@drawable/ic_baseline_feed_20"
+        android:title="@string/activity_feed" />
+</menu>

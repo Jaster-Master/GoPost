@@ -13,7 +13,7 @@ import net.htlgkr.gopost.util.ObservableValue;
 
 public class LoginActivity extends BaseActivity {
 
-    private String tag = "LoginActivity";
+    public static String tag = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

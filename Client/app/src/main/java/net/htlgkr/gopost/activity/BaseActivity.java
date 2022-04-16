@@ -12,12 +12,15 @@ import androidx.core.content.ContextCompat;
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.fragments.HomeFragment;
 import net.htlgkr.gopost.fragments.HomeFragmentListener;
+import net.htlgkr.gopost.fragments.MainFragment;
+import net.htlgkr.gopost.fragments.MainFragmentListener;
 
-public class BaseActivity extends AppCompatActivity implements HomeFragmentListener {
+public class BaseActivity extends AppCompatActivity implements HomeFragmentListener, MainFragmentListener {
 
     public static String tag;
     public static BaseActivity instance;
     private HomeFragment homeFragment;
+    private MainFragment mainFragment;
     private final static String LOG = BaseActivity.class.getSimpleName();
 
     @Override
@@ -26,10 +29,12 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
         instance = this;
         tag = instance.getClass().getSimpleName();
         setTheme(savedInstanceState);
-        setContentView(R.layout.template_main); //TODO: Change from template to actual xml
+        setContentView(R.layout.activity_register); //TODO: Change from template to actual xml
 
         homeFragment = new HomeFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.homeFragmentContainer,homeFragment).commit();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.homeFragmentContainer, homeFragment).commit();
+        mainFragment = new MainFragment();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.mainFragmentContainer, mainFragment).commit();
     }
 
     private void setTheme(Bundle savedInstanceState) {
@@ -46,10 +51,9 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
 
 
     @Override
-    public void onInputSent(String input) {
-        Log.i(LOG,"Received input from HomeFragment: "+input);
-        switch(input)
-        {
+    public void onInputHomeSent(String input) {
+        Log.i(LOG, "Received input from HomeFragment: " + input);
+        switch (input) {
             case "Search":
                 //TODO Switch to SearchActivity
                 break;
@@ -58,6 +62,16 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
                 break;
             case "Profile":
                 //TODO Switch to ProfileActivity
+                break;
+        }
+    }
+
+    @Override
+    public void onInputMainSent(String input) {
+        Log.i(LOG, "Received input from MainFragment: " + input);
+        switch (input) {
+            case "CreatePost":
+                //TODO Create Post
                 break;
         }
     }

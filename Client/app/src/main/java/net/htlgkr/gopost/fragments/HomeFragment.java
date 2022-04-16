@@ -27,9 +27,9 @@ public class HomeFragment extends Fragment {
         imageViewHome = view.findViewById(R.id.imageViewHome);
         imageViewProfile = view.findViewById(R.id.imageViewProfile);
 
-        imageViewSearch.setOnClickListener(v -> listener.onInputSent("Search"));
-        imageViewHome.setOnClickListener(v -> listener.onInputSent("Home"));
-        imageViewProfile.setOnClickListener(v -> listener.onInputSent("Profile"));
+        imageViewSearch.setOnClickListener(v -> listener.onInputHomeSent("Search"));
+        imageViewHome.setOnClickListener(v -> listener.onInputHomeSent("Home"));
+        imageViewProfile.setOnClickListener(v -> listener.onInputHomeSent("Profile"));
         return view;
     }
 
