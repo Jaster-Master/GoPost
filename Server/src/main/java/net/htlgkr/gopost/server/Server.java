@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class Server {
         isRunning = new ObservableValue<>(true);
         PrintWriter writer = null;
         try {
+            serverSocket.setSoTimeout(10000);
             serverSocket = new ServerSocket(PORT);
             writer = new PrintWriter(new FileWriter("log.txt"), true);
             System.out.println("Running");
@@ -53,8 +55,11 @@ public class Server {
                 System.out.println(LocalDateTime.now() + " ; Client connected");
                 ClientConnection clientConnection = new ClientConnection(clientSocket);
                 new Thread(clientConnection).start();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                if(e instanceof SocketTimeoutException)
+                    System.out.println("Timeout");
+                else
+                    e.printStackTrace();
             }
         }
     }
