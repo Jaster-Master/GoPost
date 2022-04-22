@@ -1,6 +1,7 @@
 module Server {
     requires mysql.connector.java;
     requires org.json;
+    requires java.sql;
 
     exports net.htlgkr.gopost.data;
     exports net.htlgkr.gopost.database;

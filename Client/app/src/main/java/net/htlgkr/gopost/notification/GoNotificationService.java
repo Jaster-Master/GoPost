@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,12 +17,14 @@ import com.google.firebase.messaging.RemoteMessage;
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.activity.BaseActivity;
 
+import java.util.Map;
+
 public class GoNotificationService extends FirebaseMessagingService {
 
     public static final String LOG_TAG = GoNotificationService.class.getSimpleName();
-    private final String CHANNEL_ID = getString(R.string.notification_channel_id);
-    private final Context context = getApplicationContext();
-    private final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+    private String CHANNEL_ID;
+    private Context context;
+    private long userId;
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -32,10 +35,31 @@ public class GoNotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
-        showNotification(message.getMessageType());
+        SharedPreferences sharedPreferences = getSharedPreferences("GoPostLoginData", MODE_PRIVATE);
+        userId = sharedPreferences.getLong("userId", -1);
+
+        Log.i(LOG_TAG, "Message Received: " + message.getNotification());
+        if (!isForThisClient(message.getData())) return;
+
+        showNotification(message);
     }
 
-    private void showNotification(String notification) {
+    private boolean isForThisClient(Map<String, String> data) {
+        Object userIdObject = data.get("userId");
+        if (userIdObject == null) return false;
+        long userId = Long.parseLong(userIdObject.toString());
+        System.out.println(this.userId);
+        return userId != this.userId;
+    }
+
+    private void showNotification(RemoteMessage message) {
+        CHANNEL_ID = getString(R.string.notification_channel_id);
+        context = getApplicationContext();
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+
+        String notification = message.getData().get("notificationType");
+        if (notification == null) return;
+        Log.i(LOG_TAG, "Notification: " + notification);
         switch (notification) {
             case "Follower":
                 notificationManager.notify(1, createFollowNotification());
