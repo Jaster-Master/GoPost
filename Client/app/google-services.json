@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "419825348257",
+    "project_id": "gopost-6d27e",
+    "storage_bucket": "gopost-6d27e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419825348257:android:4cc56581af6f9a1dc40ae0",
+        "android_client_info": {
+          "package_name": "net.htlgkr.gopost"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "419825348257-40e5ure89ia107vqkab63l3bc3t859jg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-qq4MAi1IhvmpOZ44NtBRUtRk-GecCvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "419825348257-40e5ure89ia107vqkab63l3bc3t859jg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

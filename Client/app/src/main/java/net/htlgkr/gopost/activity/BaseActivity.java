@@ -17,7 +17,7 @@ import net.htlgkr.gopost.fragments.MainFragmentListener;
 
 public class BaseActivity extends AppCompatActivity implements HomeFragmentListener, MainFragmentListener {
 
-    public static String tag;
+    public static String log_tag;
     public static BaseActivity instance;
     private HomeFragment homeFragment;
     private MainFragment mainFragment;
@@ -27,7 +27,7 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
-        tag = instance.getClass().getSimpleName();
+        log_tag = instance.getClass().getSimpleName();
         setTheme(savedInstanceState);
         setContentView(R.layout.activity_register); //TODO: Change from template to actual xml
 

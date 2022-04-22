@@ -4,6 +4,7 @@ import net.htlgkr.gopost.data.Post;
 import net.htlgkr.gopost.data.Profile;
 import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.notification.GoNotification;
 import net.htlgkr.gopost.packet.*;
 import net.htlgkr.gopost.server.Server;
 import net.htlgkr.gopost.util.Command;
@@ -222,5 +223,13 @@ public class DBTest {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void sendNotificationTest() {
+        System.out.println("SendNotificationTest");
+        long testUserId = 0;
+        boolean result = GoNotification.sendNotification(testUserId);
+        Assert.assertTrue(result);
     }
 }

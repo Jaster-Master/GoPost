@@ -26,7 +26,7 @@ public class Server {
         isRunning = new ObservableValue<>(true);
         PrintWriter writer = null;
         try {
-            serverSocket.setSoTimeout(10000);
+            //serverSocket.setSoTimeout(10000);
             serverSocket = new ServerSocket(PORT);
             writer = new PrintWriter(new FileWriter("log.txt"), true);
             System.out.println("Running");
@@ -56,7 +56,7 @@ public class Server {
                 ClientConnection clientConnection = new ClientConnection(clientSocket);
                 new Thread(clientConnection).start();
             } catch (Exception e) {
-                if(e instanceof SocketTimeoutException)
+                if (e instanceof SocketTimeoutException)
                     System.out.println("Timeout");
                 else
                     e.printStackTrace();

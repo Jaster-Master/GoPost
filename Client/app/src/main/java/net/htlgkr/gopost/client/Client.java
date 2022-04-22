@@ -19,7 +19,7 @@ public class Client {
     private static final ObservableValue<Boolean> isConnected = new ObservableValue<>();
     private static Socket clientSocket;
     private static ServerConnection connection;
-    private static User client;
+    public static User client;
 
     static {
         readInfo();
@@ -60,10 +60,6 @@ public class Client {
         } catch (IOException e) {
             return false;
         }
-    }
-
-    public static User getClient() {
-        return client;
     }
 
     public static ObservableValue<Boolean> getIsConnected() {
