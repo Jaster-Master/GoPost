@@ -11,7 +11,7 @@ import java.net.URL;
 
 public class GoNotification {
 
-    public final static String AUTH_KEY_FCM = "AAAAYb-KbqE:APA91bFPNnHUlqI_OyMYc7FFDqHEKJv6_oJ0_wkHMrAeUUpXfnVJd5LuXVCSH0CAhqp-OSzguD5UeuHAMGIYXqPyun5_mZ1_c9hmcl88VdXvXNMnUPNzWeZ5at4Mt_au-rotpfg9mzlX";
+    public final static String AUTH_KEY_FCM = "placeholder";
     public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
 
     public static boolean sendNotification(long userId) {
