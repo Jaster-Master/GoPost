@@ -1,22 +1,32 @@
 package net.htlgkr.gopost.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import net.htlgkr.gopost.R;
+import net.htlgkr.gopost.activity.CreatePostActivity;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 
 
 public class HeaderBarFragment extends Fragment {
@@ -25,28 +35,27 @@ public class HeaderBarFragment extends Fragment {
     private static final int TAKE_PICTURE = 1;
 
     private ImageView imageViewIcon;
-    private ImageView imageViewMenu;
+    private ImageButton optionsMenuButton;
     private TextView textViewGoPost;
+
+    private String currentImagePath;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_header_bar, container, false);
         imageViewIcon = view.findViewById(R.id.imageViewIcon);
-        imageViewMenu = view.findViewById(R.id.imageViewMenu);
+        optionsMenuButton = view.findViewById(R.id.optionsMenuButton);
         textViewGoPost = view.findViewById(R.id.textViewGoPost);
-
-
-        imageViewMenu.setOnClickListener(this::createPopupMenu);
+        createPopupMenu();
         return view;
     }
 
-    private void createPopupMenu(View v) {
-        PopupMenu popupMenu = new PopupMenu(requireActivity().getApplicationContext(), v);
-        setIconVisible(popupMenu);
-        popupMenu.inflate(R.menu.mainfragment_popup_menu);
-
-        popupMenu.setOnMenuItemClickListener(this::onMenuItemClick);
-        popupMenu.show();
+    private void createPopupMenu() {
+        PopupMenu options = new PopupMenu(requireActivity().getApplicationContext(), optionsMenuButton);
+        setIconVisible(options);
+        options.inflate(R.menu.mainfragment_popup_menu);
+        options.setOnMenuItemClickListener(this::onMenuItemClick);
+        optionsMenuButton.setOnClickListener(view -> options.show());
     }
 
     private boolean onMenuItemClick(MenuItem item) {
@@ -63,31 +72,47 @@ public class HeaderBarFragment extends Fragment {
         return true;
     }
 
-    private final String filename = "amogus.jpeg";
-
     private void onCreatePostButtonAction() {
-        /*String rootDir = getContext().getFilesDir().getAbsolutePath();
-        File file = new File(rootDir + filename);
-        FileProvider fileProvider = new FileProvider();
-        ParcelFileDescriptor descriptor = fileProvider.openFile(file.toURI(), null);
+        File photo = createImageFile();
+        if (photo == null) return;
+
+        Uri photoURI = FileProvider.getUriForFile(getContext(), "com.example.android.fileprovider", photo);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, descriptor);
-        startActivityForResult(intent, TAKE_PICTURE);*/
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        startActivityForResult(intent, TAKE_PICTURE);
+    }
+
+    private File createImageFile() {
+        try {
+            String timeStamp = LocalDate.now().toString();
+            String imageFileName = "JPEG_" + timeStamp + "_";
+            File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+            currentImagePath = image.getAbsolutePath();
+            return image;
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*if (requestCode == TAKE_PICTURE) {
+        if (requestCode == TAKE_PICTURE) {
             if (resultCode == Activity.RESULT_OK) {
-                String rootDir = getContext().getFilesDir().getAbsolutePath();
-                File file = new File(rootDir + filename);
-                Bitmap takenImage = BitmapFactory.decodeFile(file.getAbsolutePath());
-                byte[] imageBytes = ImageConverter.getBytesFromBitmap(takenImage);
-                Log.i("amogus", String.valueOf(imageBytes.length));
+                loadCreatePostActivity(currentImagePath);
+                getActivity().finish();
             }
-        }*/
+        }
+    }
+
+    private void loadCreatePostActivity(String imagePath) {
+        Intent createPostIntent = new Intent(getContext(), CreatePostActivity.class);
+        String imageBytesKey = getString(R.string.image_path_intent_key);
+        createPostIntent.putExtra(imageBytesKey, imagePath);
+        getActivity().startActivity(createPostIntent);
     }
 
     private void onCreateStoryButtonAction() {
