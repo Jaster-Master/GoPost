@@ -1,7 +1,5 @@
 package net.htlgkr.gopost.database;
 
-import net.htlgkr.gopost.data.User;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -83,18 +81,6 @@ public class DBHandler {
             e.printStackTrace();
         }
         return results;
-    }
-
-    public User getUserFromId(long userId) {
-        String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserProfilePicture FROM GoUser WHERE GoUserId = ?";
-        List<DBObject> result = readFromDB(selectUserStatement, userId, "1;BigInt", "2;String", "3;String", "4;String", "5;String", "6;Blob");
-        return new User(result.get(0).getLong(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getString(), result.get(5).getBlob());
-    }
-
-    public User getUserFromName(String userName) {
-        String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserProfilePicture FROM GoUser WHERE GoUserName = ?";
-        List<DBObject> result = readFromDB(selectUserStatement, userName, "1;BigInt", "2;String", "3;String", "4;String", "5;String", "6;Blob");
-        return new User(result.get(0).getLong(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getString(), result.get(5).getBlob());
     }
 
     private List<DBObject> subtractionOfObjectsAndStatements(List<DBObject> dbObjects, List<DBObject> statementValues) {

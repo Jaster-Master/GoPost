@@ -68,7 +68,7 @@ public class ObservableValue<T> implements Serializable {
         if (hasSetListener()) {
             onValueSet.onValueSet(observableValue);
         }
-        if(boundValue != null && !boundCall){
+        if (boundValue != null && !boundCall) {
             boundValue.boundCall = true;
             boundValue.setValue(observableValue);
             boundValue.boundCall = false;
@@ -122,11 +122,43 @@ public class ObservableValue<T> implements Serializable {
         this.boundedValue = boundValue;
     }
 
-    public void unbind(){
-        if(boundedValue == null) return;
+    public void unbind() {
+        if (boundedValue == null) return;
         boundValue = null;
         boundedValue.boundValue = null;
         boundedValue.boundedValue = null;
         boundedValue = null;
+    }
+
+    public T getObservableValue() {
+        return observableValue;
+    }
+
+    public void setObservableValue(T observableValue) {
+        this.observableValue = observableValue;
+    }
+
+    public ObservableValue<T> getBoundValue() {
+        return boundValue;
+    }
+
+    public void setBoundValue(ObservableValue<T> boundValue) {
+        this.boundValue = boundValue;
+    }
+
+    public ObservableValue<T> getBoundedValue() {
+        return boundedValue;
+    }
+
+    public void setBoundedValue(ObservableValue<T> boundedValue) {
+        this.boundedValue = boundedValue;
+    }
+
+    public boolean isBoundCall() {
+        return boundCall;
+    }
+
+    public void setBoundCall(boolean boundCall) {
+        this.boundCall = boundCall;
     }
 }

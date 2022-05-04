@@ -2,6 +2,8 @@ package net.htlgkr.gopost.server;
 
 import net.htlgkr.gopost.data.*;
 import net.htlgkr.gopost.database.DBObject;
+import net.htlgkr.gopost.database.DataQuery;
+import net.htlgkr.gopost.notification.GoNotification;
 import net.htlgkr.gopost.packet.*;
 import net.htlgkr.gopost.util.Command;
 
@@ -13,7 +15,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ClientConnection implements Runnable {
@@ -50,7 +51,7 @@ public class ClientConnection implements Runnable {
                 if (!(readObject instanceof Packet packet)) continue;
                 System.out.println("Packet received: " + packet.getCommand());
                 if (readObject instanceof UserPacket userPacket) {
-                    handleBlockPacket(userPacket);
+                    handleUserPacket(userPacket);
                 } else if (readObject instanceof LoginPacket loginPacket) {
                     handleLoginPacket(loginPacket);
                 } else if (readObject instanceof PostPacket postPacket) {
@@ -61,6 +62,10 @@ public class ClientConnection implements Runnable {
                     handleReportPacket(reportPacket);
                 } else if (readObject instanceof StoryPacket storyPacket) {
                     handleStoryPacket(storyPacket);
+                } else if (readObject instanceof LikePacket likePacket) {
+                    handleLikePacket(likePacket);
+                } else if (readObject instanceof CommentPacket commentPacket) {
+                    handleCommentPacket(commentPacket);
                 }
             } catch (IOException | ClassNotFoundException e) {
                 if (e instanceof EOFException || e instanceof SocketException) {
@@ -78,12 +83,50 @@ public class ClientConnection implements Runnable {
         }
     }
 
+    private void handleCommentPacket(CommentPacket commentPacket) {
+        Comment comment = commentPacket.getComment();
+        User sentUser = commentPacket.getSentByUser();
+        String postUrl = commentPacket.getCommentedPostURL();
+        String selectPostId = "SELECT PostId FROM Post WHERE PostURL = ?";
+        long postId = Server.DB_HANDLER.readFromDB(selectPostId, postUrl, "1;BigInt").get(0).getLong();
+        String insertStatement = "INSERT INTO GoLike(GoUserComment,PostId,CommentDateTime,GoUserId) VALUES(?,?,?,?)";
+        Timestamp createdTimestamp = Timestamp.valueOf(comment.getCreatedDate());
+        Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
+                comment.getMessage(),
+                postId,
+                createdTimestamp,
+                sentUser.getUserId());
+        sendPacket(new Packet(Command.COMMENTED_POST, null));
+
+        String selectCommentedUserId = "SELECT UserId FROM Post WHERE PostURL = ?";
+        long commentedUserId = Server.DB_HANDLER.readFromDB(selectCommentedUserId, postUrl, "1;BigInt").get(0).getLong();
+
+        sendCommentNotification(sentUser, DataQuery.getUserFromId(commentedUserId));
+    }
+
+    private void handleLikePacket(LikePacket likePacket) {
+        User sentUser = likePacket.getSentByUser();
+        String postUrl = likePacket.getLikedPostUrl();
+        String selectPostId = "SELECT PostId FROM Post WHERE PostURL = ?";
+        long postId = Server.DB_HANDLER.readFromDB(selectPostId, postUrl, "1;BigInt").get(0).getLong();
+        String insertStatement = "INSERT INTO GoLike(PostId,GoUserId) VALUES(?,?)";
+        Server.DB_HANDLER.executeStatementsOnDB(insertStatement,
+                postId,
+                sentUser.getUserId());
+
+        String selectLikedUserId = "SELECT UserId FROM Post WHERE PostURL = ?";
+        long likedUserId = Server.DB_HANDLER.readFromDB(selectLikedUserId, postUrl, "1;BigInt").get(0).getLong();
+
+        sendPacket(new Packet(Command.LIKED_POST, null));
+        sendLikeNotification(sentUser, DataQuery.getUserFromId(likedUserId));
+    }
+
     private synchronized void handleStoryPacket(StoryPacket storyPacket) {
         Command command = storyPacket.getCommand();
         Story story = storyPacket.getStory();
         switch (command) {
             case UPLOAD_STORY -> {
-                System.out.println("uploadStory");
+                System.out.println(Command.UPLOAD_STORY);
                 if (story.getStory() == null || story.getStory().size() <= 0) {
                     sendPacket(new Packet(Command.NO_PICTURES, null));
                     return;
@@ -113,12 +156,20 @@ public class ClientConnection implements Runnable {
                 System.out.println("uploadStory-Packet sent");
             }
             case DELETE_STORY -> {
-                System.out.println("deleteStory");
+                System.out.println(Command.DELETE_STORY);
                 String deleteStoryMediaStatement = "DELETE FROM StoryMedia WHERE EXISTS (SELECT 1 FROM Story WHERE Story.StoryId = StoryMedia.StoryId AND Story.StoryURL = ?)";
                 Server.DB_HANDLER.executeStatementsOnDB(deleteStoryMediaStatement, story.getUrl());
                 String deleteStoryStatement = "DELETE FROM Story WHERE StoryURL = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(deleteStoryStatement, story.getUrl());
                 sendPacket(new Packet(Command.DELETED_STORY, null));
+            }
+            case GET_STORY -> {
+                System.out.println(Command.GET_STORY);
+                String getStoryStatement = "SELECT StoryId, GoUserId, StoryDateTime, StoryURL, Longitude, Latitude FROM Story WHERE GoUserId = ?";
+                List<DBObject> storyResult = Server.DB_HANDLER.readFromDB(getStoryStatement, story.getUrl(), "1;String");
+
+                Story requestedStory = DataQuery.getStory(storyResult, 0);
+                sendPacket(new StoryPacket(Command.ANSWER, null, requestedStory));
             }
         }
     }
@@ -126,8 +177,8 @@ public class ClientConnection implements Runnable {
     private synchronized void handleReportPacket(ReportPacket reportPacket) {
         Command command = reportPacket.getCommand();
         if (Command.ADD_REPORT.equals(command)) {
-            System.out.println("addReport");
-            User reportedUser = Server.DB_HANDLER.getUserFromName(reportPacket.getUserName());
+            System.out.println(Command.ADD_REPORT);
+            User reportedUser = DataQuery.getUserFromName(reportPacket.getUserName());
             String insertStatement = "INSERT INTO ReportedGoUser(Reported,Reporter,Reason) VALUES(?,?,?)";
             Server.DB_HANDLER.executeStatementsOnDB(insertStatement, reportPacket.getSentByUser().getUserId(), reportedUser.getUserId(), reportPacket.getReason());
             sendPacket(new Packet(Command.REPORTED, null));
@@ -137,16 +188,16 @@ public class ClientConnection implements Runnable {
     private synchronized void handleProfilePacket(ProfilePacket profilePacket) {
         Command command = profilePacket.getCommand();
         if (Command.REQUEST_PROFILE.equals(command)) {
-            System.out.println("requestProfile");
+            System.out.println(Command.REQUEST_PROFILE);
             long userId = profilePacket.getProfile().getUserId();
             String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserDescription, GoUserIsPrivate, GoUserDateTime, GoUserProfilePicture FROM GoUser WHERE GoUserId = ?";
             List<DBObject> userResult = Server.DB_HANDLER.readFromDB(selectUserStatement, userId, "1;BigInt", "2;String", "3;String", "4;String", "5;String", "6;String", "7;Boolean", "8;Timestamp", "9;Blob");
-            Post[] posts = getPosts(userId);
-            Post[] savedPosts = getSavedPosts(userId);
-            User[] friends = getFriends(userId);
-            User[] followers = getFollowers(userId);
-            User[] followed = getFollowed(userId);
-            Story[] stories = getStories(userId);
+            Post[] posts = DataQuery.getPosts(userId);
+            Post[] savedPosts = DataQuery.getSavedPosts(userId);
+            User[] friends = DataQuery.getFriends(userId);
+            User[] followers = DataQuery.getFollowers(userId);
+            User[] followed = DataQuery.getFollowed(userId);
+            Story[] stories = DataQuery.getStories(userId);
 
             String userName = userResult.get(1).getString();
             String profileName = userResult.get(2).getString();
@@ -164,154 +215,12 @@ public class ClientConnection implements Runnable {
         }
     }
 
-    private synchronized Story[] getStories(long userId) {
-        String selectStoryStatement = "SELECT StoryId, GoUserId, StoryDateTime, StoryURL, Longitude, Latitude FROM Story WHERE GoUserId = ?";
-        List<DBObject> storiesResult = Server.DB_HANDLER.readFromDB(selectStoryStatement, userId, "1;BigInt", "2;BigInt", "3;Timestamp", "4;String", "5;Double", "6;Double");
-        List<Story> stories = new ArrayList<>();
-        for (int i = 0; i < storiesResult.size(); i += 6) {
-            stories.add(getStory(storiesResult, i));
-        }
-        return stories.toArray(new Story[0]);
-    }
-
-    private synchronized Story getStory(List<DBObject> postsResult, int startIndex) {
-        long storyId = postsResult.get(startIndex).getLong();
-
-        List<byte[]> storyMediaBytes = getStoryMedia(storyId);
-        User storyUser = Server.DB_HANDLER.getUserFromId(postsResult.get(startIndex + 1).getLong());
-        LocalDateTime storyCreatedDate = postsResult.get(startIndex + 2).getTimestamp().toLocalDateTime();
-        String storyUrl = postsResult.get(startIndex + 3).getString();
-        GoLocation storyLocation = new GoLocation(postsResult.get(startIndex + 4).getDouble(), postsResult.get(startIndex + 5).getDouble());
-
-        return new Story(storyMediaBytes, storyUser, storyUrl, storyCreatedDate, storyLocation);
-    }
-
-    private synchronized List<byte[]> getStoryMedia(long storyId) {
-        String selectStoryMediaStatement = "SELECT Story FROM StoryMedia WHERE StoryId = ?";
-        List<DBObject> storyMediaResult = Server.DB_HANDLER.readFromDB(selectStoryMediaStatement, storyId, "1;Blob");
-        List<byte[]> storyMediaBytes = new ArrayList<>();
-        for (DBObject dbObject : storyMediaResult) {
-            storyMediaBytes.add(dbObject.getBlob());
-        }
-        return storyMediaBytes;
-    }
-
-    private synchronized User[] getFollowed(long userId) {
-        String selectedFollowedStatement = "SELECT GoUser FROM Follower WHERE GoUserFollower = ?";
-        List<DBObject> followedResult = Server.DB_HANDLER.readFromDB(selectedFollowedStatement, userId, "1;BigInt");
-        List<User> followed = new ArrayList<>();
-        for (DBObject dbObject : followedResult) {
-            long followedUserId = dbObject.getLong();
-            followed.add(Server.DB_HANDLER.getUserFromId(followedUserId));
-        }
-        return followed.toArray(new User[0]);
-    }
-
-    private synchronized User[] getFollowers(long userId) {
-        String selectedFollowersStatement = "SELECT GoUserFollower FROM Follower WHERE GoUser = ?";
-        List<DBObject> followerResult = Server.DB_HANDLER.readFromDB(selectedFollowersStatement, userId, "1;BigInt");
-        List<User> follower = new ArrayList<>();
-        for (DBObject dbObject : followerResult) {
-            long followerUserId = dbObject.getLong();
-            follower.add(Server.DB_HANDLER.getUserFromId(followerUserId));
-        }
-        return follower.toArray(new User[0]);
-    }
-
-    private synchronized User[] getFriends(long userId) {
-        String selectedFriendsStatement = "SELECT GoUserFriend FROM Friend WHERE GoUser = ?";
-        List<DBObject> friendsResult = Server.DB_HANDLER.readFromDB(selectedFriendsStatement, userId, "1;BigInt");
-        List<User> friends = new ArrayList<>();
-        for (DBObject dbObject : friendsResult) {
-            long friendUserId = dbObject.getLong();
-            friends.add(Server.DB_HANDLER.getUserFromId(friendUserId));
-        }
-        return friends.toArray(new User[0]);
-    }
-
-    private synchronized Post[] getSavedPosts(long userId) {
-        String selectSavedPostsStatement = "SELECT PostId FROM SavedPost WHERE GoUserId = ?";
-        List<DBObject> savedPostsResult = Server.DB_HANDLER.readFromDB(selectSavedPostsStatement, userId, "1;BigInt");
-        List<Post> savedPosts = new ArrayList<>();
-        for (int i = 0; i < savedPostsResult.size(); i++) {
-            long postId = savedPostsResult.get(i).getLong();
-            String selectPostsStatement = "SELECT PostId, GoUserId, PostURL, PostDateTime, Longitude, Latitude, PostDescription FROM Post WHERE PostId = ?";
-            List<DBObject> postsResult = Server.DB_HANDLER.readFromDB(selectPostsStatement, postId, "1;BigInt", "2;BigInt", "3;String", "4;Timestamp", "5;Double", "6;Double", "7;String");
-            savedPosts.add(getPost(postsResult, 0));
-        }
-        return savedPosts.toArray(new Post[0]);
-    }
-
-    private synchronized Post getPost(List<DBObject> postsResult, int startIndex) {
-        long postId = postsResult.get(startIndex).getLong();
-
-        List<byte[]> postMediaBytes = getPostMediaBytes(postId);
-        User[] likes = getLikes(postId);
-        Comment[] comments = getComments(postId);
-        User[] marks = getMarks(postId);
-
-        User postUser = Server.DB_HANDLER.getUserFromId(postsResult.get(startIndex + 1).getLong());
-        String postUrl = postsResult.get(startIndex + 2).getString();
-        LocalDateTime postCreatedDate = postsResult.get(startIndex + 3).getTimestamp().toLocalDateTime();
-        GoLocation postLocation = new GoLocation(postsResult.get(startIndex + 4).getDouble(), postsResult.get(startIndex + 5).getDouble());
-        String postDescription = postsResult.get(startIndex + 6).getString();
-
-        return new Post(postMediaBytes, postUser, postUrl, postCreatedDate, postLocation, postDescription, likes, comments, marks);
-    }
-
-    private synchronized Post[] getPosts(long userId) {
-        String selectPostsStatement = "SELECT PostId, GoUserId, PostURL, PostDateTime, Longitude, Latitude, PostDescription FROM Post WHERE GoUserId = ?";
-        List<DBObject> postsResult = Server.DB_HANDLER.readFromDB(selectPostsStatement, userId, "1;BigInt", "2;BigInt", "3;String", "4;Timestamp", "5;Double", "6;Double", "7;String");
-        List<Post> posts = new ArrayList<>();
-        for (int i = 0; i < postsResult.size(); i += 7) {
-            posts.add(getPost(postsResult, i));
-        }
-        return posts.toArray(new Post[0]);
-    }
-
-    private synchronized List<byte[]> getPostMediaBytes(long postId) {
-        String selectPostMediaStatement = "SELECT Post FROM PostMedia WHERE PostId = ?";
-        List<DBObject> postMediaResult = Server.DB_HANDLER.readFromDB(selectPostMediaStatement, postId, "1;Blob");
-        List<byte[]> postMediaBytes = new ArrayList<>();
-        for (DBObject dbObject : postMediaResult) {
-            postMediaBytes.add(dbObject.getBlob());
-        }
-        return postMediaBytes;
-    }
-
-    private synchronized User[] getLikes(long postId) {
-        String selectLikesStatement = "SELECT GoUserId FROM GoLike WHERE PostId = ?";
-        List<DBObject> likesResult = Server.DB_HANDLER.readFromDB(selectLikesStatement, postId, "1;BigInt");
-        return likesResult.stream().map(l -> Server.DB_HANDLER.getUserFromId(l.getLong())).toArray(User[]::new);
-    }
-
-    private synchronized Comment[] getComments(long postId) {
-        String selectCommentsStatement = "SELECT GoUserId, GoUserComment, CommentDateTime FROM PostComment WHERE PostId = ?";
-        List<DBObject> commentsResult = Server.DB_HANDLER.readFromDB(selectCommentsStatement, postId, "1;String", "2;Timestamp", "3;BigInt");
-        List<Comment> comments = new ArrayList<>();
-        for (int j = 0; j < commentsResult.size(); j += 3) {
-            User commentUser = Server.DB_HANDLER.getUserFromId(commentsResult.get(j).getLong());
-            String commentContent = commentsResult.get(j + 1).getString();
-            LocalDateTime commentCreatedDate = commentsResult.get(j + 2).getTimestamp().toLocalDateTime();
-            Comment nextComment = new Comment(commentUser, commentContent, commentCreatedDate);
-            comments.add(nextComment);
-        }
-        return comments.toArray(new Comment[0]);
-    }
-
-    private synchronized User[] getMarks(long postId) {
-        String selectMarksStatement = "SELECT GoUserId FROM GoMark WHERE PostId = ?";
-        List<DBObject> marksResult = Server.DB_HANDLER.readFromDB(selectMarksStatement,
-                postId, "1;BigInt");
-        return marksResult.stream().map(l -> Server.DB_HANDLER.getUserFromId(l.getLong())).toArray(User[]::new);
-    }
-
     private synchronized void handlePostPacket(PostPacket postPacket) {
         Command command = postPacket.getCommand();
         Post post = postPacket.getPost();
         switch (command) {
-            case UPLOAD_POST-> {
-                System.out.println("uploadPost");
+            case UPLOAD_POST -> {
+                System.out.println(Command.UPLOAD_POST);
                 if (post.getPictures() == null || post.getPictures().size() <= 0) {
                     sendPacket(new Packet(Command.NO_PICTURES, null));
                     return;
@@ -345,21 +254,29 @@ public class ClientConnection implements Runnable {
                 System.out.println("uploadPost-Packet sent");
             }
             case DELETE_POST -> {
-                System.out.println("deletePost");
+                System.out.println(Command.DELETE_POST);
                 String deletePostMediaStatement = "DELETE FROM PostMedia WHERE EXISTS (SELECT 1 FROM Post WHERE Post.PostId = PostMedia.PostId AND Post.PostURL = ?)";
                 Server.DB_HANDLER.executeStatementsOnDB(deletePostMediaStatement, post.getUrl());
                 String deletePostStatement = "DELETE FROM Post WHERE PostURL = ?";
                 Server.DB_HANDLER.executeStatementsOnDB(deletePostStatement, post.getUrl());
                 sendPacket(new Packet(Command.DELETED_POST, null));
             }
+            case GET_POST -> {
+                System.out.println(Command.GET_POST);
+                String getPostStatement = "SELECT PostId, GoUserId, PostURL, PostDateTime, Longitude, Latitude, PostDescription FROM Post WHERE PostURL = ?";
+                List<DBObject> postResult = Server.DB_HANDLER.readFromDB(getPostStatement, post.getUrl(), "1;String");
+
+                Post requestedPost = DataQuery.getPost(postResult, 0);
+                sendPacket(new PostPacket(Command.ANSWER, null, requestedPost));
+            }
         }
     }
 
-    private synchronized String generatePostURL(long postId){
+    private synchronized String generatePostURL(long postId) {
         return Server.TEMPLATE_URL + "post/id=" + postId;
     }
 
-    private synchronized String generateStoryURL(long storyId){
+    private synchronized String generateStoryURL(long storyId) {
         return Server.TEMPLATE_URL + "story/id=" + storyId;
     }
 
@@ -367,9 +284,13 @@ public class ClientConnection implements Runnable {
         Command command = loginPacket.getCommand();
         switch (command) {
             case FIRST_TIME_LOGIN:
-                System.out.println("FirstTimeLogin");
+                System.out.println(Command.FIRST_TIME_LOGIN);
                 if (isUserNameAlreadyExisting(loginPacket.getUserName())) {
                     sendPacket(new Packet(Command.USER_ALREADY_EXISTS, null));
+                    return;
+                }
+                if (isEmailAlreadyExisting(loginPacket.getEmail())) {
+                    sendPacket(new Packet(Command.EMAIL_ALREADY_EXISTS, null));
                     return;
                 }
                 String insertStatement = "INSERT INTO GoUser(GoUserName,GoProfileName,GoUserEmail,GoUserPassword,GoUserIsPrivate,GoUserDateTime) VALUES(?,?,?,?,?,?)";
@@ -380,8 +301,8 @@ public class ClientConnection implements Runnable {
                         loginPacket.getPassword(),
                         false,
                         Timestamp.valueOf(LocalDateTime.now()));
-            case CHECK_PASSWORD:
-                System.out.println("checkIfCorrectPassword");
+            case LOGIN:
+                System.out.println(Command.LOGIN);
                 String selectStatement = "SELECT GoUserId, GoUserProfilePicture FROM GoUser WHERE GoUserName = ? AND GoUserPassword = ?";
                 List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, loginPacket.getUserName(), loginPacket.getPassword(), "1;BigInt", "2;Blob");
                 setUserId(result.get(0).getLong());
@@ -393,25 +314,55 @@ public class ClientConnection implements Runnable {
     }
 
     private synchronized boolean isUserNameAlreadyExisting(String userName) {
-        String selectStatement = "SELECT GoUserName FROM GoUser";
-        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, "1;String");
-        for (DBObject dbObject : result) {
-            if (dbObject.getString().equals(userName)) {
-                return true;
-            }
-        }
-        return false;
+        String selectStatement = "SELECT 1 FROM GoUser WHERE GoUserName = ?";
+        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, userName, "1;String");
+        return result.size() > 0;
     }
 
-    private synchronized void handleBlockPacket(UserPacket userPacket) {
+    private synchronized boolean isEmailAlreadyExisting(String email) {
+        String selectStatement = "SELECT 1 FROM GoUser WHERE GoUserEmail = ?";
+        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, email, "1;String");
+        return result.size() > 0;
+    }
+
+    private synchronized void handleUserPacket(UserPacket userPacket) {
         Command command = userPacket.getCommand();
         if (Command.ADD_BLOCK.equals(command)) {
-            System.out.println("addBlock");
-            User blockedUser = Server.DB_HANDLER.getUserFromName(userPacket.getUserName());
+            System.out.println(Command.ADD_BLOCK);
+            User blockedUser = DataQuery.getUserFromName(userPacket.getUserName());
             String insertStatement = "INSERT INTO BlockedGoUser(Blocker,Blocked) VALUES(?,?)";
             Server.DB_HANDLER.executeStatementsOnDB(insertStatement, userPacket.getSentByUser().getUserId(), blockedUser.getUserId());
             sendPacket(new Packet(Command.BLOCKED, null));
+        } else if (Command.FOLLOW.equals(command)) {
+            System.out.println(Command.FOLLOW);
+            User followedUser = DataQuery.getUserFromName(userPacket.getUserName());
+            User followerUser = userPacket.getSentByUser();
+            String insertStatement = "INSERT INTO Follower(GoUserFollower,GoUser) VALUES(?,?)";
+            Server.DB_HANDLER.executeStatementsOnDB(insertStatement, followerUser.getUserId(), followedUser.getUserId());
+            sendPacket(new Packet(Command.FOLLOWED, null));
+            sendFollowNotification(followerUser, followedUser);
         }
+    }
+
+    private synchronized void sendFollowNotification(User followerUser, User followedUser) {
+        String title = "GoPost";
+        String body = followerUser.getProfileName() + " just followed you on GoPost!";
+        String icon = Server.GOPOST_ICON;
+        GoNotification.sendNotification(followedUser.getUserId(), title, body, icon);
+    }
+
+    private synchronized void sendLikeNotification(User likeUser, User likedUser) {
+        String title = "GoPost";
+        String body = likeUser.getProfileName() + " just liked your Post on GoPost!";
+        String icon = Server.GOPOST_ICON;
+        GoNotification.sendNotification(likedUser.getUserId(), title, body, icon);
+    }
+
+    private synchronized void sendCommentNotification(User commentUser, User commentedUser) {
+        String title = "GoPost";
+        String body = commentUser.getProfileName() + " just commented your Post on GoPost!";
+        String icon = Server.GOPOST_ICON;
+        GoNotification.sendNotification(commentedUser.getUserId(), title, body, icon);
     }
 
     private synchronized boolean sendPacket(Packet packet) {

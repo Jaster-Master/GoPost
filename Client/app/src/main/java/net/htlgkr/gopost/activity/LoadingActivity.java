@@ -1,17 +1,17 @@
 package net.htlgkr.gopost.activity;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
-
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.client.Client;
 import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.notification.AutoStart;
 import net.htlgkr.gopost.packet.LoginPacket;
 import net.htlgkr.gopost.packet.Packet;
 import net.htlgkr.gopost.util.Command;
@@ -24,22 +24,27 @@ public class LoadingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
-        createNotificationChannel();
+        startNotificationService();
+
         new Thread(() -> {
-            Log.e(log_tag, String.valueOf(Client.openConnection()));
+            Log.i(log_tag, String.valueOf(Client.openConnection()));
             loadLoginData();
         }).start();
+    }
 
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            Log.i(log_tag, "New Token: " + task.getResult());
-            FirebaseMessaging.getInstance().subscribeToTopic("GoPost");
-        });
+    private void startNotificationService() {
+        Intent broadcastIntent = new Intent(this, AutoStart.class);
+        broadcastIntent.setAction(AutoStart.ACTION_ACTIVITY_START);
+        sendBroadcast(broadcastIntent);
     }
 
     private void loadLoginData() {
         SharedPreferences sharedPreferences = getSharedPreferences("GoPostLoginData", MODE_PRIVATE);
         long userId = sharedPreferences.getLong("userId", -1);
-        if (userId == -1) return;
+        if (userId == -1) {
+            loadLoginActivity();
+            return;
+        }
         String userName = sharedPreferences.getString("userName", null);
         String profileName = sharedPreferences.getString("profileName", null);
         String email = sharedPreferences.getString("email", null);
@@ -52,20 +57,33 @@ public class LoadingActivity extends BaseActivity {
 
     private void autoLogin(long userId, String userName, String profileName, String email, String password, byte[] profilePicture) {
         User user = new User(userId, userName, profileName, email, password, profilePicture);
-        LoginPacket loginPacket = new LoginPacket(Command.CHECK_PASSWORD, user, profileName, userName, email, password);
+        LoginPacket loginPacket = new LoginPacket(Command.LOGIN, user, profileName, userName, email, password);
         ObservableValue<Packet> packet = new ObservableValue<>(loginPacket);
         packet.setOnValueSet((ObservableValue.SetListener<Packet>) value -> {
             Client.client = value.getSentByUser();
             Util.saveLoginData(this);
+            loadMainActivity();
         });
         Client.getConnection().sendPacket(packet);
     }
 
-    private void createNotificationChannel() {
-        String channelId = getString(R.string.notification_channel_id);
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(channelId, channelId, importance);
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
+    private void loadMainActivity() {
+        executeLater(() -> {
+            Intent mainIntent = new Intent(this, MainActivity.class);
+            startActivity(mainIntent);
+            finish();
+        });
+    }
+
+    private void loadLoginActivity() {
+        executeLater(() -> {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+            finish();
+        });
+    }
+
+    private static void executeLater(Runnable runnable) {
+        new Handler(Looper.getMainLooper()).postDelayed(runnable, 1000);
     }
 }

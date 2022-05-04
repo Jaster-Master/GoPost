@@ -11,13 +11,13 @@ import java.net.URL;
 
 public class GoNotification {
 
-    public final static String AUTH_KEY_FCM = "AAAAYb-KbqE:APA91bFPNnHUlqI_OyMYc7FFDqHEKJv6_oJ0_wkHMrAeUUpXfnVJd5LuXVCSH0CAhqp-OSzguD5UeuHAMGIYXqPyun5_mZ1_c9hmcl88VdXvXNMnUPNzWeZ5at4Mt_au-rotpfg9mzlX";
+    public final static String AUTH_KEY_FCM = "";
     public final static String API_URL_FCM = "https://fcm.googleapis.com/fcm/send";
 
-    public static boolean sendNotification(long userId) {
+    public static boolean sendNotification(long userId, String title, String body, String icon) {
         HttpURLConnection conn = getHttpConnection();
         if (conn == null) return false;
-        JSONObject httpData = getJsonObject(userId, "Follower");
+        JSONObject httpData = getJsonObject(userId, "Follower", title, body, icon);
         sendJson(conn, httpData);
         handleResponse(conn);
         return true;
@@ -71,14 +71,15 @@ public class GoNotification {
         }
     }
 
-    private static JSONObject getJsonObject(long userId, String notificationType) {
+    private static JSONObject getJsonObject(long userId, String notificationType, String title, String body, String icon) {
         JSONObject message = new JSONObject();
         message.put("to", "/topics/GoPost");
         message.put("priority", "high");
 
         JSONObject notification = new JSONObject();
-        notification.put("title", "Java");
-        notification.put("body", "Notificação do Java");
+        notification.put("title", title);
+        notification.put("body", body);
+        notification.put("icon", icon);
         message.put("notification", notification);
 
         JSONObject data = new JSONObject();
