@@ -29,7 +29,7 @@
     <string name="display_name">Displayname</string>
     <string name="email">Email:</string>
     <string name="notification_channel_id" translatable="false">GoPostNotifications</string>
+    <string name="image_path_intent_key" translatable="false">imageBytes</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
