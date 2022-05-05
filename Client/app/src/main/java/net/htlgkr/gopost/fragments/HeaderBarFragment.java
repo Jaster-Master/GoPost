@@ -16,6 +16,10 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -26,19 +30,15 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.time.LocalDate;
 
 
 public class HeaderBarFragment extends Fragment {
 
     public static final String LOG_TAG = HeaderBarFragment.class.getSimpleName();
-    private static final int TAKE_PICTURE = 1;
 
     private ImageView imageViewIcon;
     private ImageButton optionsMenuButton;
     private TextView textViewGoPost;
-
-    private String currentImagePath;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,21 +72,33 @@ public class HeaderBarFragment extends Fragment {
         return true;
     }
 
+    private String currentImagePath;
+    private final ActivityResultLauncher<Intent> takePictureActivityResultLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            if (result.getResultCode() == Activity.RESULT_OK) {
+                                loadCreatePostActivity(currentImagePath);
+                                getActivity().finish();
+                            }
+                        }
+                    });
+
     private void onCreatePostButtonAction() {
         File photo = createImageFile();
         if (photo == null) return;
 
         Uri photoURI = FileProvider.getUriForFile(getContext(), "com.example.android.fileprovider", photo);
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-        startActivityForResult(intent, TAKE_PICTURE);
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+        takePictureActivityResultLauncher.launch(takePictureIntent);
     }
 
     private File createImageFile() {
         try {
-            String timeStamp = LocalDate.now().toString();
-            String imageFileName = "JPEG_" + timeStamp + "_";
+            String imageFileName = "take_picture_temp";
             File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
@@ -94,17 +106,6 @@ public class HeaderBarFragment extends Fragment {
             return image;
         } catch (IOException e) {
             return null;
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == TAKE_PICTURE) {
-            if (resultCode == Activity.RESULT_OK) {
-                loadCreatePostActivity(currentImagePath);
-                getActivity().finish();
-            }
         }
     }
 
