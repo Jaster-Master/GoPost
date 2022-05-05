@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataQuery {
+    
     public static synchronized Story[] getStories(long userId) {
         String selectStoryStatement = "SELECT StoryId, GoUserId, StoryDateTime, StoryURL, Longitude, Latitude FROM Story WHERE GoUserId = ?";
         List<DBObject> storiesResult = Server.DB_HANDLER.readFromDB(selectStoryStatement, userId, "1;BigInt", "2;BigInt", "3;Timestamp", "4;String", "5;Double", "6;Double");
@@ -18,15 +19,17 @@ public class DataQuery {
         return stories.toArray(new Story[0]);
     }
 
-    public static User getUserFromId(long userId) {
+    public static synchronized User getUserFromId(long userId) {
         String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserProfilePicture FROM GoUser WHERE GoUserId = ?";
         List<DBObject> result = Server.DB_HANDLER.readFromDB(selectUserStatement, userId, "1;BigInt", "2;String", "3;String", "4;String", "5;String", "6;Blob");
+        if (result == null || result.isEmpty()) return null;
         return new User(result.get(0).getLong(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getString(), result.get(5).getBlob());
     }
 
-    public static User getUserFromName(String userName) {
+    public static synchronized User getUserFromName(String userName) {
         String selectUserStatement = "SELECT GoUserId, GoUserName, GoProfileName, GoUserEmail, GoUserPassword, GoUserProfilePicture FROM GoUser WHERE GoUserName = ?";
         List<DBObject> result = Server.DB_HANDLER.readFromDB(selectUserStatement, userName, "1;BigInt", "2;String", "3;String", "4;String", "5;String", "6;Blob");
+        if (result == null || result.isEmpty()) return null;
         return new User(result.get(0).getLong(), result.get(1).getString(), result.get(2).getString(), result.get(3).getString(), result.get(4).getString(), result.get(5).getBlob());
     }
 
@@ -160,5 +163,17 @@ public class DataQuery {
         List<DBObject> marksResult = Server.DB_HANDLER.readFromDB(selectMarksStatement,
                 postId, "1;BigInt");
         return marksResult.stream().map(l -> getUserFromId(l.getLong())).toArray(User[]::new);
+    }
+
+    public static synchronized boolean isUserNameAlreadyExisting(String userName) {
+        String selectStatement = "SELECT 1 FROM GoUser WHERE GoUserName = ?";
+        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, userName, "1;String");
+        return result.size() > 0;
+    }
+
+    public static synchronized boolean isEmailAlreadyExisting(String email) {
+        String selectStatement = "SELECT 1 FROM GoUser WHERE GoUserEmail = ?";
+        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, email, "1;String");
+        return result.size() > 0;
     }
 }

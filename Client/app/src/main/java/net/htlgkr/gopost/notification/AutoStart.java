@@ -24,6 +24,7 @@ public class AutoStart extends BroadcastReceiver {
             case Intent.ACTION_BOOT_COMPLETED:
             case ACTION_ACTIVITY_START:
             case ACTION_ACTIVITY_CLOSE:
+                Log.i(LOG_TAG, "Broadcast-Action: " + intent.getAction());
                 createNotificationChannel(context);
                 FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
                     Log.i(LOG_TAG, "New Token: " + task.getResult());

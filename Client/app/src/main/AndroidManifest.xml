@@ -30,14 +30,11 @@
         <activity
             android:name=".activity.LoadingActivity"
             android:exported="true">
-
-            <!--
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".activity.MainActivity"
@@ -80,6 +77,8 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="net.htlgkr.gopost.notification.AutoStart.ACTION_ACTIVITY_CLOSE" />
+                <action android:name="net.htlgkr.gopost.notification.AutoStart.ACTION_ACTIVITY_START" />
             </intent-filter>
         </receiver>
 

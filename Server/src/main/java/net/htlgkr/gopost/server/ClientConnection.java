@@ -83,7 +83,7 @@ public class ClientConnection implements Runnable {
         }
     }
 
-    private void handleCommentPacket(CommentPacket commentPacket) {
+    private synchronized void handleCommentPacket(CommentPacket commentPacket) {
         Comment comment = commentPacket.getComment();
         User sentUser = commentPacket.getSentByUser();
         String postUrl = commentPacket.getCommentedPostURL();
@@ -104,7 +104,7 @@ public class ClientConnection implements Runnable {
         sendCommentNotification(sentUser, DataQuery.getUserFromId(commentedUserId));
     }
 
-    private void handleLikePacket(LikePacket likePacket) {
+    private synchronized void handleLikePacket(LikePacket likePacket) {
         User sentUser = likePacket.getSentByUser();
         String postUrl = likePacket.getLikedPostUrl();
         String selectPostId = "SELECT PostId FROM Post WHERE PostURL = ?";
@@ -285,11 +285,11 @@ public class ClientConnection implements Runnable {
         switch (command) {
             case FIRST_TIME_LOGIN:
                 System.out.println(Command.FIRST_TIME_LOGIN);
-                if (isUserNameAlreadyExisting(loginPacket.getUserName())) {
+                if (DataQuery.isUserNameAlreadyExisting(loginPacket.getUserName())) {
                     sendPacket(new Packet(Command.USER_ALREADY_EXISTS, null));
                     return;
                 }
-                if (isEmailAlreadyExisting(loginPacket.getEmail())) {
+                if (DataQuery.isEmailAlreadyExisting(loginPacket.getEmail())) {
                     sendPacket(new Packet(Command.EMAIL_ALREADY_EXISTS, null));
                     return;
                 }
@@ -311,18 +311,6 @@ public class ClientConnection implements Runnable {
                 User user = new User(userId, loginPacket.getUserName(), loginPacket.getProfileName(), loginPacket.getEmail(), loginPacket.getPassword(), result.get(1).getBlob());
                 sendPacket(new Packet(Command.ANSWER, user));
         }
-    }
-
-    private synchronized boolean isUserNameAlreadyExisting(String userName) {
-        String selectStatement = "SELECT 1 FROM GoUser WHERE GoUserName = ?";
-        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, userName, "1;String");
-        return result.size() > 0;
-    }
-
-    private synchronized boolean isEmailAlreadyExisting(String email) {
-        String selectStatement = "SELECT 1 FROM GoUser WHERE GoUserEmail = ?";
-        List<DBObject> result = Server.DB_HANDLER.readFromDB(selectStatement, email, "1;String");
-        return result.size() > 0;
     }
 
     private synchronized void handleUserPacket(UserPacket userPacket) {

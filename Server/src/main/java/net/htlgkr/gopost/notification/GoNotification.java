@@ -76,15 +76,11 @@ public class GoNotification {
         message.put("to", "/topics/GoPost");
         message.put("priority", "high");
 
-        JSONObject notification = new JSONObject();
-        notification.put("title", title);
-        notification.put("body", body);
-        notification.put("icon", icon);
-        message.put("notification", notification);
-
         JSONObject data = new JSONObject();
         data.put("userId", userId);
-        data.put("notificationType", notificationType);
+        data.put("title", title);
+        data.put("body", body);
+        data.put("icon", icon);
         message.put("data", data);
 
         return message;
