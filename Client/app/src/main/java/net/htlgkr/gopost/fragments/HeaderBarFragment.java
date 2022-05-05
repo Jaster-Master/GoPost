@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.activity.CreatePostActivity;
+import net.htlgkr.gopost.activity.CreateStoryActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class HeaderBarFragment extends Fragment {
     }
 
     private String currentImagePath;
-    private final ActivityResultLauncher<Intent> takePictureActivityResultLauncher =
+    private final ActivityResultLauncher<Intent> createPostActivityResultLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                     new ActivityResultCallback<ActivityResult>() {
                         @Override
@@ -84,8 +85,19 @@ public class HeaderBarFragment extends Fragment {
                             }
                         }
                     });
+    private final ActivityResultLauncher<Intent> createStoryActivityResultLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            if (result.getResultCode() == Activity.RESULT_OK) {
+                                loadCreateStoryActivity(currentImagePath);
+                                getActivity().finish();
+                            }
+                        }
+                    });
 
-    private void onCreatePostButtonAction() {
+    private void loadCameraIntent(ActivityResultLauncher<Intent> activityResultLauncher) {
         File photo = createImageFile();
         if (photo == null) return;
 
@@ -93,7 +105,11 @@ public class HeaderBarFragment extends Fragment {
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-        takePictureActivityResultLauncher.launch(takePictureIntent);
+        activityResultLauncher.launch(takePictureIntent);
+    }
+
+    private void onCreatePostButtonAction() {
+        loadCameraIntent(createPostActivityResultLauncher);
     }
 
     private File createImageFile() {
@@ -117,11 +133,27 @@ public class HeaderBarFragment extends Fragment {
     }
 
     private void onCreateStoryButtonAction() {
+        loadCameraIntent(createStoryActivityResultLauncher);
+    }
 
+    private void loadCreateStoryActivity(String imagePath) {
+        Intent createStoryIntent = new Intent(getContext(), CreateStoryActivity.class);
+        String imageBytesKey = getString(R.string.image_path_intent_key);
+        createStoryIntent.putExtra(imageBytesKey, imagePath);
+        getActivity().startActivity(createStoryIntent);
     }
 
     private void onActivityFeedButtonAction() {
+        loadActivityFeedFragment();
+    }
 
+    private void loadActivityFeedFragment() {
+        ActivityFeedFragment activityFeedFragment = new ActivityFeedFragment();
+        getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.contentFragmentContainer, activityFeedFragment)
+                .commit();
     }
 
     private void setIconVisible(PopupMenu popupMenu) {

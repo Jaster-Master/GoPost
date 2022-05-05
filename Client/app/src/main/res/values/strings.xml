@@ -30,6 +30,4 @@
     <string name="email">Email:</string>
     <string name="notification_channel_id" translatable="false">GoPostNotifications</string>
     <string name="image_path_intent_key" translatable="false">imageBytesPath</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <!-- TODO: Remove or change this placeholder text -->
 </resources>

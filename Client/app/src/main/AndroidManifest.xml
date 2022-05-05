@@ -22,6 +22,9 @@
         android:theme="@style/Theme.GoPost"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.CreateStoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CreatePostActivity"
             android:exported="false" />
         <activity
