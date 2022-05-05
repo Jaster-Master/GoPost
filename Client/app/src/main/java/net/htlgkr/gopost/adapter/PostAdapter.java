@@ -11,28 +11,28 @@ import android.widget.TextView;
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.data.Post;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PostAdapter extends BaseAdapter {
-    private List<Post> posts = new ArrayList<>();
-    private int layoutid;
-    private LayoutInflater inflater;
 
-    public PostAdapter(List<Post> posts, int layoutid, LayoutInflater inflater) {
+    private final List<Post> posts;
+    private final int layoutId;
+    private final LayoutInflater inflater;
+
+    public PostAdapter(List<Post> posts, int layoutId, LayoutInflater inflater) {
         this.posts = posts;
-        this.layoutid = layoutid;
+        this.layoutId = layoutId;
         this.inflater = inflater;
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return posts.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return posts.get(i);
     }
 
     @Override
@@ -43,23 +43,24 @@ public class PostAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         Post post = posts.get(i);
-        View listitemView = (view==null)?inflater.inflate(layoutid,null):view;
-        ImageView profilePicture = listitemView.findViewById(R.id.iv_ProfilePicture);
-        ImageView postOptionsPicture = listitemView.findViewById(R.id.iv_PostOptions);
-        ImageView postPicture = listitemView.findViewById(R.id.iv_Post);
-        ImageView likePicture = listitemView.findViewById(R.id.iv_Like);
-        ImageView commentPicture = listitemView.findViewById(R.id.iv_Comment);
-        ImageView sendPicture = listitemView.findViewById(R.id.iv_send);
-        ImageView markPicture = listitemView.findViewById(R.id.iv_mark);
-        TextView profilenameText = listitemView.findViewById(R.id.tv_ProfileName);
-        TextView locationText = listitemView.findViewById(R.id.tv_Location);
-        TextView likesText = listitemView.findViewById(R.id.tv_Likes);
-        TextView commentText = listitemView.findViewById(R.id.tv_Comment);
-        TextView seeAllCommentsText = listitemView.findViewById(R.id.tv_SeeAllComments);
-        EditText writeCommentEdit = listitemView.findViewById(R.id.et_writeComment);
+        View itemView = (view == null) ? inflater.inflate(layoutId, null) : view;
+
+        ImageView profilePicture = itemView.findViewById(R.id.iv_profile_picture);
+        ImageView postOptionsPicture = itemView.findViewById(R.id.iv_post_options);
+        ImageView postPicture = itemView.findViewById(R.id.iv_post);
+        ImageView likePicture = itemView.findViewById(R.id.iv_like);
+        ImageView commentPicture = itemView.findViewById(R.id.iv_comment);
+        ImageView sendPicture = itemView.findViewById(R.id.iv_send);
+        ImageView markPicture = itemView.findViewById(R.id.iv_mark);
+        TextView profileNameText = itemView.findViewById(R.id.tv_profile_name);
+        TextView locationText = itemView.findViewById(R.id.tv_location);
+        TextView likesText = itemView.findViewById(R.id.tv_likes);
+        TextView commentText = itemView.findViewById(R.id.tv_comment);
+        TextView seeAllCommentsText = itemView.findViewById(R.id.tv_see_all_comments);
+        EditText writeCommentEdit = itemView.findViewById(R.id.et_write_comment);
 
         //TODO set all VIEWS!!!
 
-        return listitemView;
+        return itemView;
     }
 }

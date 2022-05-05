@@ -19,7 +19,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/iv_ProfilePicture"
+                android:id="@+id/iv_profile_picture"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginLeft="10dp"
@@ -35,7 +35,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_ProfileName"
+                    android:id="@+id/tv_profile_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Schotzgoblin"
@@ -43,14 +43,14 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_Location"
+                    android:id="@+id/tv_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Peuerbach" />
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/iv_PostOptions"
+                android:id="@+id/iv_post_options"
                 android:layout_width="match_parent"
                 android:layout_height="47dp"
                 android:scaleType="fitEnd"
@@ -59,7 +59,7 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/iv_Post"
+            android:id="@+id/iv_post"
             android:layout_width="match_parent"
             android:layout_height="731dp"
             android:layout_marginLeft="10dp"
@@ -78,14 +78,14 @@
             android:weightSum="10">
 
             <ImageView
-                android:id="@+id/iv_Like"
+                android:id="@+id/iv_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/ic_twotone_favorite_24" />
 
             <ImageView
-                android:id="@+id/iv_Comment"
+                android:id="@+id/iv_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -109,7 +109,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_Likes"
+            android:id="@+id/tv_likes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -119,7 +119,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv_Comment"
+            android:id="@+id/tv_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -128,7 +128,7 @@
             android:text="Schotzgoblin du bist blöd" />
 
         <TextView
-            android:id="@+id/tv_SeeAllComments"
+            android:id="@+id/tv_see_all_comments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -137,7 +137,7 @@
             android:text="Alle 50 Kommentare ansehen" />
 
         <EditText
-            android:id="@+id/et_writeComment"
+            android:id="@+id/et_write_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
