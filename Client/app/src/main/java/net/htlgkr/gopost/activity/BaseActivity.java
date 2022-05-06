@@ -21,7 +21,6 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
     public static BaseActivity instance;
     private HomeFragment homeFragment;
     private MainFragment mainFragment;
-    private final static String LOG = BaseActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
 
     @Override
     public void onInputHomeSent(String input) {
-        Log.i(LOG, "Received input from HomeFragment: " + input);
+        Log.i(tag, "Received input from HomeFragment: " + input);
         switch (input) {
             case "Search":
                 //TODO Switch to SearchActivity
@@ -68,7 +67,7 @@ public class BaseActivity extends AppCompatActivity implements HomeFragmentListe
 
     @Override
     public void onInputMainSent(String input) {
-        Log.i(LOG, "Received input from MainFragment: " + input);
+        Log.i(tag, "Received input from MainFragment: " + input);
         switch (input) {
             case "CreatePost":
                 //TODO Create Post

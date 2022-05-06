@@ -60,13 +60,13 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/textViewLoginPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:padding="10dp"
-                android:text="@string/password"
+                android:text="@string/prompt_password"
                 android:textSize="18sp" />
 
             <EditText
@@ -81,12 +81,12 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btnLogin"
+            android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
-            android:text="@string/sign_in"
+            android:text="@string/action_sign_in_short"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -98,12 +98,12 @@
             android:textColor="#ccc" />
 
         <Button
-            android:id="@+id/btnLoginRegister"
+            android:id="@+id/buttonRegisterLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
-            android:text="@string/sign_up"
+            android:text="@string/action_sign_up"
             android:textColor="@android:color/white" />
 
     </LinearLayout>
