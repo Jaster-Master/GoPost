@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import androidx.fragment.app.Fragment;
-
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.adapter.PostGridAdapter;
 import net.htlgkr.gopost.client.Client;
@@ -22,13 +20,14 @@ import net.htlgkr.gopost.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchContentFragment extends Fragment {
+public class SearchContentFragment extends BaseFragment {
 
     private GridView postsGridView;
     private PostGridAdapter postGridAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_search_content, container, false);
         postsGridView = view.findViewById(R.id.postsGridView);
         List<Post> posts = new ArrayList<>();
