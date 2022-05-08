@@ -1,10 +1,8 @@
 package net.htlgkr.gopost.activity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.fragments.HeaderBarFragment;
@@ -37,21 +35,21 @@ public class MainActivity extends BaseActivity {
     public void onSearchButtonAction(View view) {
         Log.i(log_tag, "Pressed Search Button");
         searchFragment = new SearchFragment();
-        menuBarFragment.changeSelectedButton(view);
+        menuBarFragment.setSelectedButton(view);
         getSupportFragmentManager().beginTransaction().replace(R.id.contentFragmentContainer, searchFragment).commit();
     }
 
     public void onHomeButtonAction(View view) {
         Log.i(log_tag, "Pressed Home Button");
         homeFragment = new HomeFragment();
-        menuBarFragment.changeSelectedButton(view);
+        menuBarFragment.setSelectedButton(view);
         getSupportFragmentManager().beginTransaction().replace(R.id.contentFragmentContainer, homeFragment).commit();
     }
 
     public void onProfileButtonAction(View view) {
         Log.i(log_tag, "Pressed Profile Button");
         profileFragment = new ProfileFragment();
-        menuBarFragment.changeSelectedButton(view);
+        menuBarFragment.setSelectedButton(view);
         getSupportFragmentManager().beginTransaction().replace(R.id.contentFragmentContainer, profileFragment).commit();
     }
 }
