@@ -147,7 +147,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="@string/already_have_account"
-            android:textColor="#ccc" />
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/btnLoginRegister"
@@ -158,6 +158,15 @@
             android:onClick="onLoginButtonAction"
             android:text="@string/sign_in"
             android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/textViewRegisterErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textColor="#FF5656"
+            android:textSize="16sp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
