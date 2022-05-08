@@ -21,7 +21,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
 
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.activity.CreatePostActivity;
@@ -33,7 +32,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 
-public class HeaderBarFragment extends Fragment {
+public class HeaderBarFragment extends BaseFragment {
 
     public static final String LOG_TAG = HeaderBarFragment.class.getSimpleName();
 
@@ -43,6 +42,7 @@ public class HeaderBarFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_header_bar, container, false);
         imageViewIcon = view.findViewById(R.id.imageViewIcon);
         optionsMenuButton = view.findViewById(R.id.optionsMenuButton);

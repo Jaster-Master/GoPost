@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import net.htlgkr.gopost.R;
 
-public class SearchFragment extends BaseFragment {
+public class SearchResultFragment extends BaseFragment {
 
     private EditText searchField;
     private SearchContentFragment searchContentFragment;
