@@ -29,5 +29,6 @@
     <string name="display_name">Displayname</string>
     <string name="email">Email:</string>
     <string name="notification_channel_id" translatable="false">GoPostNotifications</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="image_path_intent_key" translatable="false">imageBytesPath</string>
+    <string name="search_hint">Search</string>
 </resources>

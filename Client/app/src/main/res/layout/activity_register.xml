@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.htlgkr.gopost.activity.LoginActivity">
+    tools:context="net.htlgkr.gopost.activity.RegisterActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextLoginEmail"
+                android:id="@+id/editTextRegisterEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
@@ -68,7 +68,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextLoginDisplayName"
+                android:id="@+id/editTextRegisterProfileName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
@@ -94,7 +94,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextLoginUsername"
+                android:id="@+id/editTextRegisterUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -121,7 +121,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextLoginPassword"
+                android:id="@+id/editTextRegisterPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -137,6 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
+            android:onClick="onRegisterButtonAction"
             android:text="@string/sign_up"
             android:textColor="@android:color/white" />
 
@@ -154,6 +155,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
+            android:onClick="onLoginButtonAction"
             android:text="@string/sign_in"
             android:textColor="@android:color/white" />
 

@@ -3,11 +3,12 @@ package net.htlgkr.gopost.data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Post implements Serializable {
 
-    private byte[][] pictures;
+    private List<byte[]> pictures;
     private String url;
     private String description;
     private User fromUser;
@@ -20,23 +21,27 @@ public class Post implements Serializable {
     public Post() {
     }
 
-    public Post(byte[][] pictures, String url, String description, User fromUser, LocalDateTime releaseDate, User[] likes, Comment[] comments, User[] marks, GoLocation location) {
+    public Post(List<byte[]> pictures, User fromUser, String url, LocalDateTime createdDate, GoLocation location, String description, User[] likes, Comment[] comments, User[] marks) {
         this.pictures = pictures;
         this.url = url;
         this.description = description;
         this.fromUser = fromUser;
-        this.createdDate = releaseDate;
+        this.createdDate = createdDate;
         this.likes = likes;
         this.comments = comments;
         this.marks = marks;
         this.location = location;
     }
 
-    public byte[][] getPictures() {
+    public void addToPost(byte[] postMedia) {
+        pictures.add(postMedia);
+    }
+
+    public List<byte[]> getPictures() {
         return pictures;
     }
 
-    public void setPictures(byte[][] pictures) {
+    public void setPictures(List<byte[]> pictures) {
         this.pictures = pictures;
     }
 
@@ -109,13 +114,12 @@ public class Post implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return Arrays.equals(pictures, post.pictures) && Objects.equals(url, post.url) && Objects.equals(description, post.description) && Objects.equals(fromUser, post.fromUser) && Objects.equals(createdDate, post.createdDate) && Arrays.equals(likes, post.likes) && Arrays.equals(comments, post.comments) && Arrays.equals(marks, post.marks) && Objects.equals(location, post.location);
+        return Objects.equals(pictures, post.pictures) && Objects.equals(url, post.url) && Objects.equals(description, post.description) && Objects.equals(fromUser, post.fromUser) && Objects.equals(createdDate, post.createdDate) && Arrays.equals(likes, post.likes) && Arrays.equals(comments, post.comments) && Arrays.equals(marks, post.marks) && Objects.equals(location, post.location);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(url, description, fromUser, createdDate, location);
-        result = 31 * result + Arrays.hashCode(pictures);
+        int result = Objects.hash(pictures, url, description, fromUser, createdDate, location);
         result = 31 * result + Arrays.hashCode(likes);
         result = 31 * result + Arrays.hashCode(comments);
         result = 31 * result + Arrays.hashCode(marks);

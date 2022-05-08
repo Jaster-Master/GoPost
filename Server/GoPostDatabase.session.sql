@@ -154,10 +154,10 @@ CREATE TABLE Follower
 (
     FollowerId     BIGINT NOT NULL auto_increment,
     GoUserFollower BIGINT,
-    GoUser         BIGINT,
+    GoUserFollowed BIGINT,
     CONSTRAINT FollowerGoUserFollower_FK FOREIGN KEY (GoUserFollower)
         REFERENCES GoUser (GoUserId) ON DELETE SET NULL,
-    CONSTRAINT FollowerGoUser_FK FOREIGN KEY (GoUser)
+    CONSTRAINT FollowerGoUserFollowed_FK FOREIGN KEY (GoUserFollowed)
         REFERENCES GoUser (GoUserId) ON DELETE SET NULL,
     CONSTRAINT Follower_PK PRIMARY KEY (FollowerId)
 );
