@@ -33,12 +33,12 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textViewRegisterEmail"
+                android:id="@+id/textViewLoginEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:padding="10dp"
-                android:text="@string/prompt_email"
+                android:text="@string/email"
                 android:textSize="18sp" />
 
             <EditText
@@ -68,7 +68,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextRegisterDisplayName"
+                android:id="@+id/editTextRegisterProfileName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
@@ -94,7 +94,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editTextRegisterUsername"
+                android:id="@+id/editTextRegisterUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -117,7 +117,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:padding="10dp"
-                android:text="@string/prompt_password"
+                android:text="@string/password"
                 android:textSize="18sp" />
 
             <EditText
@@ -137,7 +137,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
-            android:text="@string/action_sign_up"
+            android:onClick="onRegisterButtonAction"
+            android:text="@string/sign_up"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -149,13 +150,23 @@
             android:textColor="#ccc" />
 
         <Button
-            android:id="@+id/buttonRegisterLogin"
+            android:id="@+id/btnLoginRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
-            android:text="@string/action_sign_in_short"
+            android:onClick="onLoginButtonAction"
+            android:text="@string/sign_in"
             android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/textViewRegisterErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textColor="#FF5656"
+            android:textSize="16sp" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -129,4 +129,36 @@ public class ObservableValue<T> implements Serializable {
         boundedValue.boundedValue = null;
         boundedValue = null;
     }
+
+    public T getObservableValue() {
+        return observableValue;
+    }
+
+    public void setObservableValue(T observableValue) {
+        this.observableValue = observableValue;
+    }
+
+    public ObservableValue<T> getBoundValue() {
+        return boundValue;
+    }
+
+    public void setBoundValue(ObservableValue<T> boundValue) {
+        this.boundValue = boundValue;
+    }
+
+    public ObservableValue<T> getBoundedValue() {
+        return boundedValue;
+    }
+
+    public void setBoundedValue(ObservableValue<T> boundedValue) {
+        this.boundedValue = boundedValue;
+    }
+
+    public boolean isBoundCall() {
+        return boundCall;
+    }
+
+    public void setBoundCall(boolean boundCall) {
+        this.boundCall = boundCall;
+    }
 }

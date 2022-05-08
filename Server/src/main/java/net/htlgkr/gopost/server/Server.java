@@ -21,6 +21,7 @@ public class Server {
     public static ObservableValue<Boolean> isRunning;
     public static final DBHandler DB_HANDLER = new DBHandler();
     public static final String TEMPLATE_URL = "https://gopost.zeige.info/";
+    public static final String GOPOST_ICON = "ic_image_gopost_icon";
 
     public static void startServer(String[] args) {
         isRunning = new ObservableValue<>(true);

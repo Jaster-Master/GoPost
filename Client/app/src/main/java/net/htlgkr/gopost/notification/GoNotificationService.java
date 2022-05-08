@@ -38,86 +38,54 @@ public class GoNotificationService extends FirebaseMessagingService {
         SharedPreferences sharedPreferences = getSharedPreferences("GoPostLoginData", MODE_PRIVATE);
         userId = sharedPreferences.getLong("userId", -1);
 
-        Log.i(LOG_TAG, "Message Received: " + message.getNotification());
+        Log.i(LOG_TAG, "Message Received");
         if (!isForThisClient(message.getData())) return;
-
-        showNotification(message);
+        showNotification(message.getData());
     }
 
     private boolean isForThisClient(Map<String, String> data) {
         Object userIdObject = data.get("userId");
         if (userIdObject == null) return false;
         long userId = Long.parseLong(userIdObject.toString());
-        System.out.println(this.userId);
         return userId != this.userId;
     }
 
-    private void showNotification(RemoteMessage message) {
+    private void showNotification(Map<String, String> data) {
         CHANNEL_ID = getString(R.string.notification_channel_id);
         context = getApplicationContext();
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-        String notification = message.getData().get("notificationType");
-        if (notification == null) return;
-        Log.i(LOG_TAG, "Notification: " + notification);
-        switch (notification) {
-            case "Follower":
-                notificationManager.notify(1, createFollowNotification());
-                break;
-            case "Like":
-                notificationManager.notify(1, createLikeNotification());
-                break;
-            case "Comment":
-                notificationManager.notify(1, createCommentNotification());
-                break;
-        }
+        String title = data.get("title");
+        String body = data.get("body");
+        String icon = data.get("icon");
+        notificationManager.notify(0, createNotification(title, body, icon));
+        Log.i(LOG_TAG, "Notification: " + body);
     }
 
-    private Notification createFollowNotification() {
+    private Notification createNotification(String title, String body, String icon) {
         Intent activityFeedIntent = new Intent(getApplicationContext(), BaseActivity.class);
         activityFeedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent activityFeedPendingIntent =
                 PendingIntent.getActivity(context, 0, activityFeedIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder followNotificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                .setContentTitle("GoPost - Follow")
-                .setContentText("Somebody followed you!")
+                .setSmallIcon(getDrawableId(icon))
+                .setContentTitle(title)
+                .setContentText(body)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(activityFeedPendingIntent)
                 .setAutoCancel(true);
         return followNotificationBuilder.build();
     }
 
-    private Notification createLikeNotification() {
-        Intent activityFeedIntent = new Intent(context, BaseActivity.class);
-        activityFeedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent activityFeedPendingIntent =
-                PendingIntent.getActivity(context, 0, activityFeedIntent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder likeNotificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                .setContentTitle("GoPost - Like")
-                .setContentText("Somebody liked your content!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(activityFeedPendingIntent)
-                .setAutoCancel(true);
-        return likeNotificationBuilder.build();
+    private int getDrawableId(String icon) {
+        return this.getResources().getIdentifier(icon, "drawable", this.getPackageName());
     }
 
-    private Notification createCommentNotification() {
-        Intent activityFeedIntent = new Intent(context, BaseActivity.class);
-        activityFeedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent activityFeedPendingIntent =
-                PendingIntent.getActivity(context, 0, activityFeedIntent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder commentNotificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                .setContentTitle("GoPost - Comment")
-                .setContentText("Somebody commented your content!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(activityFeedPendingIntent)
-                .setAutoCancel(true);
-        return commentNotificationBuilder.build();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Intent broadcastIntent = new Intent(this, AutoStart.class);
+        broadcastIntent.setAction(AutoStart.ACTION_ACTIVITY_CLOSE);
+        sendBroadcast(broadcastIntent);
     }
 }

@@ -1,9 +1,6 @@
 package net.htlgkr.gopost.test;
 
-import net.htlgkr.gopost.data.Post;
-import net.htlgkr.gopost.data.Profile;
-import net.htlgkr.gopost.data.Story;
-import net.htlgkr.gopost.data.User;
+import net.htlgkr.gopost.data.*;
 import net.htlgkr.gopost.notification.GoNotification;
 import net.htlgkr.gopost.packet.*;
 import net.htlgkr.gopost.server.Server;
@@ -18,10 +15,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBTest {
+public class ServerTest {
 
     private static final String IP_ADDRESS = "80.243.162.117";
     private static final int PORT = 16663;
@@ -68,6 +66,16 @@ public class DBTest {
     }
 
     @Test
+    public void handleCommentPacket() {
+
+    }
+
+    @Test
+    public void handleLikePacket() {
+
+    }
+
+    @Test
     public void loginAlreadyExistsTest() {
         System.out.println("LoginAlreadyExistsTest");
         Packet packet = sendPacket(new LoginPacket(Command.FIRST_TIME_LOGIN, testUser, testUser.getProfileName(), testUser.getUserName(), testUser.getEmail(), testUser.getPassword()));
@@ -100,6 +108,24 @@ public class DBTest {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void getPostTest() {
+        System.out.println("GetPostTest");
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[0]);
+        Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
+        sendPacket(new PostPacket(Command.UPLOAD_POST, testUser, post));
+
+        Post requestPost = new Post();
+        requestPost.setUrl(Server.TEMPLATE_URL + "post/id=" + 0);
+        PostPacket postPacket = new PostPacket(Command.GET_POST, testUser, requestPost);
+        PostPacket requestedPost = (PostPacket) sendPacket(postPacket);
+        if (requestedPost == null || !requestedPost.getCommand().equals(Command.ANSWER)) {
+            Assert.fail();
+        }
+        System.out.println(requestedPost.getPost().getUrl());
     }
 
     @Test
@@ -143,6 +169,24 @@ public class DBTest {
             Assert.fail();
         }
         System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void getStoryTest() {
+        System.out.println("GetStoryTest");
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[0]);
+        Story story = new Story(bytes, testUser, null, null, null);
+        sendPacket(new StoryPacket(Command.UPLOAD_STORY, testUser, story));
+
+        Story requestStory = new Story();
+        requestStory.setUrl(Server.TEMPLATE_URL + "story/id=" + 0);
+        StoryPacket storyPacket = new StoryPacket(Command.GET_POST, testUser, requestStory);
+        StoryPacket requestedStory = (StoryPacket) sendPacket(storyPacket);
+        if (requestedStory == null || !requestedStory.getCommand().equals(Command.ANSWER)) {
+            Assert.fail();
+        }
+        System.out.println(requestedStory.getStory().getUrl());
     }
 
     @Test
@@ -226,10 +270,76 @@ public class DBTest {
     }
 
     @Test
-    public void sendNotificationTest() {
+    public void sendFollowerNotificationTest() {
         System.out.println("SendNotificationTest");
         long testUserId = 0;
-        boolean result = GoNotification.sendNotification(testUserId);
+        String title = "GoPost Follower";
+        String body = "Somebody followed you on GoPost!";
+        String icon = Server.GOPOST_ICON;
+        boolean result = GoNotification.sendNotification(testUserId, title, body, icon);
         Assert.assertTrue(result);
+    }
+
+    @Test
+    public void likePostTest() {
+        System.out.println("LikePostTest");
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[0]);
+        Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
+        sendPacket(new PostPacket(Command.UPLOAD_POST, testUser, post));
+
+        ProfilePacket profilePacket = new ProfilePacket(Command.REQUEST_PROFILE, testUser, null);
+        ProfilePacket profile = (ProfilePacket) sendPacket(profilePacket);
+        if (profile == null) {
+            Assert.fail();
+        }
+
+        String postUrl = profile.getProfile().getPosts()[0].getUrl();
+        LikePacket likePacket = new LikePacket(Command.LIKE_POST, testUser, postUrl);
+        Packet packet = sendPacket(likePacket);
+        if (packet == null || !packet.getCommand().equals(Command.LIKED_POST)) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void commentPostTest() {
+        System.out.println("CommentPostTest");
+        List<byte[]> bytes = new ArrayList<>();
+        bytes.add(new byte[0]);
+        Post post = new Post(bytes, testUser, null, null, null, null, null, null, null);
+        sendPacket(new PostPacket(Command.UPLOAD_POST, testUser, post));
+
+        ProfilePacket profilePacket = new ProfilePacket(Command.REQUEST_PROFILE, testUser, null);
+        ProfilePacket profile = (ProfilePacket) sendPacket(profilePacket);
+        if (profile == null) {
+            Assert.fail();
+        }
+
+        String postUrl = profile.getProfile().getPosts()[0].getUrl();
+        Comment createdComment = new Comment(testUser, "amogus", LocalDateTime.now());
+        CommentPacket commentPacket = new CommentPacket(Command.COMMENT_POST, testUser, postUrl, createdComment);
+        Packet packet = sendPacket(commentPacket);
+        if (packet == null || !packet.getCommand().equals(Command.COMMENTED_POST)) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
+    }
+
+    @Test
+    public void followUserTest() {
+        System.out.println("FollowUserTest");
+        String userName1 = "jaster";
+        String userName2 = "goblin";
+        sendPacket(new LoginPacket(Command.FIRST_TIME_LOGIN, testUser, testUser.getProfileName(), userName1, testUser.getEmail(), testUser.getPassword()));
+        sendPacket(new LoginPacket(Command.FIRST_TIME_LOGIN, testUser, testUser.getProfileName(), userName2, testUser.getEmail(), testUser.getPassword()));
+
+        UserPacket userPacket = new UserPacket(Command.FOLLOW, testUser, userName2);
+        Packet packet = sendPacket(userPacket);
+        if (packet == null || !packet.getCommand().equals(Command.FOLLOWED)) {
+            Assert.fail();
+        }
+        System.out.println(packet.getCommand());
     }
 }

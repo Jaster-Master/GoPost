@@ -2,10 +2,10 @@
 <resources>
     <string name="app_name">GoPost</string>
     <string name="title_activity_login2">LoginActivity2</string>
-    <string name="prompt_email">Email:</string>
-    <string name="prompt_password">Password:</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Anmelden</string>
+    <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
@@ -20,10 +20,14 @@
     <string name="create_story">Story erstellen</string>
     <string name="activity_feed">Aktivitäts-feed</string>
     <string name="username">Benutzername:</string>
+    <string name="password">Passwort:</string>
+    <string name="sign_in">Anmelden</string>
+    <string name="sign_up">Registrieren</string>
     <string name="no_account">Haben Sie noch kein Konto?</string>
     <string name="already_have_account">Haben Sie bereits ein Konto?</string>
     <string name="profilename">Profilname:</string>
     <string name="unique_name">Einzigartiger Name</string>
     <string name="display_name">Anzeigename</string>
-    <string name="action_sign_up">Registrieren</string>
+    <string name="email">Email</string>
+    <string name="search_hint">Suchen</string>
 </resources>

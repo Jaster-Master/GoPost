@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment;
 
 import net.htlgkr.gopost.R;
 
-public class HomeFragment extends Fragment {
+public class SearchFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
         return view;
     }
 }
