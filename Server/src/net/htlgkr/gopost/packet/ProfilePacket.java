@@ -1,8 +1,6 @@
 package net.htlgkr.gopost.packet;
 
-import net.htlgkr.gopost.data.Post;
 import net.htlgkr.gopost.data.Profile;
-import net.htlgkr.gopost.data.Story;
 import net.htlgkr.gopost.data.User;
 import net.htlgkr.gopost.util.Command;
 

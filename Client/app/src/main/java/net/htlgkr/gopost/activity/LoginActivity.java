@@ -26,16 +26,6 @@ public class LoginActivity extends BaseActivity {
 
         editTextLoginUserName = findViewById(R.id.editTextLoginUserName);
         editTextLoginPassword = findViewById(R.id.editTextLoginPassword);
-
-        new Thread(() -> {
-            ObservableValue<Packet> packet = new ObservableValue<>(new LoginPacket(Command.FIRST_TIME_LOGIN, null, "Jaster", "jaster", "amogus@sus.com", Encrypt.SHA512("amongamong")));
-            packet.setOnValueSet((ObservableValue.SetListener<Packet>) value -> {
-                Log.i(log_tag, value.getCommand().toString());
-                Client.client = value.getSentByUser();
-                Util.saveLoginData(this);
-            });
-            Client.getConnection().sendPacket(packet);
-        }).start();
     }
 
     public void onLoginButtonAction(View view) {
@@ -50,6 +40,9 @@ public class LoginActivity extends BaseActivity {
             ObservableValue<Packet> packet = new ObservableValue<>(new LoginPacket(Command.LOGIN, null, null, userName, null, Encrypt.SHA512(password)));
             packet.setOnValueSet((ObservableValue.SetListener<Packet>) value -> {
                 Log.i(log_tag, value.getCommand().toString());
+                if (value.getCommand().equals(Command.USER_DOESNT_EXIST)) {
+                    return;
+                }
                 Client.client = value.getSentByUser();
                 Util.saveLoginData(this);
                 loadMainActivity();

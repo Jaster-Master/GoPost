@@ -37,11 +37,14 @@ public class RegisterActivity extends BaseActivity {
         User registerUser = new User();
         String email = editTextRegisterEmail.getText().toString();
         if (!isValidEmail(email)) return;
+        Log.i(log_tag, "validEmail");
         String profileName = editTextRegisterProfileName.getText().toString();
         String userName = editTextRegisterUserName.getText().toString();
         if (!isValidUserName(userName)) return;
+        Log.i(log_tag, "validUserName");
         String password = editTextRegisterPassword.getText().toString();
         if (!isValidPassword(password)) return;
+        Log.i(log_tag, "validPassword");
 
         registerUser.setEmail(email);
         registerUser.setProfileName(profileName);
@@ -61,7 +64,7 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private boolean isValidPassword(String password) {
-        if (password.isEmpty() || !password.trim().isEmpty()) return false;
+        if (password.isEmpty() || password.trim().isEmpty()) return false;
         return password.length() >= 8;
     }
 
@@ -71,10 +74,12 @@ public class RegisterActivity extends BaseActivity {
             packet.setOnValueSet((ObservableValue.SetListener<Packet>) value -> {
                 Log.i(log_tag, value.getCommand().toString());
                 Client.client = value.getSentByUser();
+                Log.i(log_tag, "Response: " + Client.client);
                 Util.saveLoginData(this);
                 loadLoadingActivity();
             });
             Client.getConnection().sendPacket(packet);
+            Log.i(log_tag, "Register sent");
         }).start();
     }
 

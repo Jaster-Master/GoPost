@@ -2,11 +2,15 @@ package net.htlgkr.gopost.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.client.Client;
@@ -18,8 +22,11 @@ import net.htlgkr.gopost.util.Command;
 import net.htlgkr.gopost.util.ObservableValue;
 import net.htlgkr.gopost.util.Util;
 
+import javax.net.SocketFactory;
+
 public class LoadingActivity extends BaseActivity {
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +34,9 @@ public class LoadingActivity extends BaseActivity {
         startNotificationService();
 
         new Thread(() -> {
-            Log.i(log_tag, String.valueOf(Client.openConnection()));
+            ConnectivityManager connectivityManager = getSystemService(ConnectivityManager.class);
+            SocketFactory socketFactory = connectivityManager.getActiveNetwork().getSocketFactory();
+            Log.i(log_tag, String.valueOf(Client.openConnection(socketFactory)));
             loadLoginData();
         }).start();
     }
@@ -50,8 +59,10 @@ public class LoadingActivity extends BaseActivity {
         String email = sharedPreferences.getString("email", null);
         String password = sharedPreferences.getString("password", null);
         String profilePictureString = sharedPreferences.getString("profilePicture", null);
-        if (profilePictureString == null) profilePictureString = "";
-        byte[] profilePicture = Base64.decode(profilePictureString, Base64.DEFAULT);
+        byte[] profilePicture = null;
+        if (profilePictureString != null) {
+            profilePicture = Base64.decode(profilePictureString, Base64.DEFAULT);
+        }
         autoLogin(userId, userName, profileName, email, password, profilePicture);
     }
 
@@ -60,6 +71,10 @@ public class LoadingActivity extends BaseActivity {
         LoginPacket loginPacket = new LoginPacket(Command.LOGIN, user, profileName, userName, email, password);
         ObservableValue<Packet> packet = new ObservableValue<>(loginPacket);
         packet.setOnValueSet((ObservableValue.SetListener<Packet>) value -> {
+            if (value.getCommand().equals(Command.USER_DOESNT_EXIST)) {
+                loadLoginActivity();
+                return;
+            }
             Client.client = value.getSentByUser();
             Util.saveLoginData(this);
             loadMainActivity();

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataQuery {
-    
+
     public static synchronized Story[] getStories(long userId) {
         String selectStoryStatement = "SELECT StoryId, GoUserId, StoryDateTime, StoryURL, Longitude, Latitude FROM Story WHERE GoUserId = ?";
         List<DBObject> storiesResult = Server.DB_HANDLER.readFromDB(selectStoryStatement, userId, "1;BigInt", "2;BigInt", "3;Timestamp", "4;String", "5;Double", "6;Double");
@@ -34,6 +34,7 @@ public class DataQuery {
     }
 
     public static synchronized Story getStory(List<DBObject> postsResult, int startIndex) {
+        if (postsResult.isEmpty()) return null;
         long storyId = postsResult.get(startIndex).getLong();
 
         List<byte[]> storyMediaBytes = getStoryMedia(storyId);
@@ -102,6 +103,7 @@ public class DataQuery {
     }
 
     public static synchronized Post getPost(List<DBObject> postsResult, int startIndex) {
+        if (postsResult.isEmpty()) return null;
         long postId = postsResult.get(startIndex).getLong();
 
         List<byte[]> postMediaBytes = getPostMediaBytes(postId);
