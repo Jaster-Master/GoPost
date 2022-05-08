@@ -8,8 +8,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.SocketFactory;
 
 public class Client {
 
@@ -17,7 +18,6 @@ public class Client {
     private static int port;
     private static String ipAddress;
     private static final ObservableValue<Boolean> isConnected = new ObservableValue<>();
-    private static Socket clientSocket;
     private static ServerConnection connection;
     public static User client;
 
@@ -38,26 +38,25 @@ public class Client {
         }
     }
 
-    public static boolean openConnection() {
-        clientSocket = new Socket();
+    public static boolean openConnection(SocketFactory socketFactory) {
+        connection = new ServerConnection(ipAddress, port, socketFactory);
         try {
-            clientSocket.connect(new InetSocketAddress(ipAddress, port), 30000);
-            connection = new ServerConnection();
-            isConnected.setValue(true);
-            return true;
-        } catch (IOException e) {
+            connection.connectBlocking(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
             e.printStackTrace();
             return false;
         }
+        isConnected.setValue(true);
+        return true;
     }
 
     public static boolean closeConnection() {
         try {
-            clientSocket.close();
-            connection = null;
+            connection.closeBlocking();
             isConnected.setValue(false);
             return true;
-        } catch (IOException e) {
+        } catch (InterruptedException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -66,8 +65,8 @@ public class Client {
         return isConnected;
     }
 
-    public static Socket getClientSocket() {
-        return clientSocket;
+    public static boolean isConnected() {
+        return isConnected.getValue();
     }
 
     public static int getPort() {

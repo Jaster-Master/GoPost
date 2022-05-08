@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -24,10 +23,10 @@ public class AutoStart extends BroadcastReceiver {
             case Intent.ACTION_BOOT_COMPLETED:
             case ACTION_ACTIVITY_START:
             case ACTION_ACTIVITY_CLOSE:
-                Log.i(LOG_TAG, "Broadcast-Action: " + intent.getAction());
+                //Log.i(LOG_TAG, "Broadcast-Action: " + intent.getAction());
                 createNotificationChannel(context);
                 FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                    Log.i(LOG_TAG, "New Token: " + task.getResult());
+                    //Log.i(LOG_TAG, "New Token: " + task.getResult());
                     FirebaseMessaging.getInstance().subscribeToTopic("GoPost");
                 });
                 Intent serviceIntent = new Intent(context, GoNotificationService.class);

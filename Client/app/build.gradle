@@ -53,4 +53,5 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:1.1.0-beta03"
     implementation "androidx.camera:camera-view:1.1.0-beta03"
     implementation "androidx.camera:camera-extensions:1.1.0-beta03"
+    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
 }

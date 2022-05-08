@@ -5,12 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import net.htlgkr.gopost.R;
 import net.htlgkr.gopost.util.ImageConverter;
 
-public class CreateStoryActivity extends AppCompatActivity {
+public class CreateStoryActivity extends BaseActivity {
 
     private byte[] imageBytes;
 

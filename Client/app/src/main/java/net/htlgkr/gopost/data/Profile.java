@@ -25,7 +25,7 @@ public class Profile implements Serializable {
     public Profile() {
     }
 
-    public Profile(long userId, byte[] profilePicture, String userName, String profileName, String email, String password, String description, Post[] posts, Story[] stories, boolean isPrivate, Post[] savedPosts, User[] friends, User[] followers, User[] followed, LocalDateTime createdDate) {
+    public Profile(long userId, String userName, String profileName, String email, String password, String description, boolean isPrivate, LocalDateTime createdDate, byte[] profilePicture, Post[] posts, Story[] stories, Post[] savedPosts, User[] friends, User[] followers, User[] followed) {
         this.userId = userId;
         this.profilePicture = profilePicture;
         this.userName = userName;
